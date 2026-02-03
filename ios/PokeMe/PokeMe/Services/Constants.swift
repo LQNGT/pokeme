@@ -15,6 +15,9 @@ enum Constants {
         static let disconnect = "/match/disconnect"
         static let poke = "/match/poke"
         static let messages = "/match/messages"
+        static let matchHistory = "/match/history"
+        static let block = "/match/block"
+        static let report = "/match/report"
     }
 
     enum StorageKeys {

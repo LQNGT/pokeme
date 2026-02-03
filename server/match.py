@@ -109,12 +109,31 @@ def create_match(user1_id, user2_id, date):
     return entity
 
 
+def get_blocked_user_ids(user_id):
+    """Get list of user IDs that this user has blocked."""
+    client = get_client()
+    query = client.query(kind='Block')
+    query.add_filter('blockerId', '=', user_id)
+    return [b.get('blockedUserId') for b in query.fetch()]
+
+
+def get_blocked_by_user_ids(user_id):
+    """Get list of user IDs that have blocked this user."""
+    client = get_client()
+    query = client.query(kind='Block')
+    query.add_filter('blockedUserId', '=', user_id)
+    return [b.get('blockerId') for b in query.fetch()]
+
+
 def find_partner_in_pool(user_id, date, user_major=None, prefer_same_major=False):
     """Find a matching partner in the pool."""
     pool_users = get_pool_users(date)
 
-    # Filter out self
-    candidates = [p for p in pool_users if p.get('userId') != user_id]
+    # Get blocked users (both directions)
+    blocked_ids = set(get_blocked_user_ids(user_id) + get_blocked_by_user_ids(user_id))
+
+    # Filter out self and blocked users
+    candidates = [p for p in pool_users if p.get('userId') != user_id and p.get('userId') not in blocked_ids]
 
     if not candidates:
         return None
@@ -451,5 +470,169 @@ def send_message():
                 'text': text,
                 'createdAt': entity.get('createdAt')
             }
+        }
+    })
+
+
+@match_bp.route('/history', methods=['GET'])
+@require_auth
+def get_match_history():
+    """Get past matches for the user."""
+    user_id = request.user_id
+    today = get_today_date_string()
+    client = get_client()
+
+    # Query matches where user is user1
+    query1 = client.query(kind='Match')
+    query1.add_filter('user1Id', '=', user_id)
+    matches1 = list(query1.fetch())
+
+    # Query matches where user is user2
+    query2 = client.query(kind='Match')
+    query2.add_filter('user2Id', '=', user_id)
+    matches2 = list(query2.fetch())
+
+    all_matches = matches1 + matches2
+
+    # Exclude today's match, format for user
+    history = []
+    for match in all_matches:
+        if match.get('date') == today:
+            continue
+        history.append(format_match_for_user(match, user_id))
+
+    # Sort by date descending
+    history.sort(key=lambda m: m['date'], reverse=True)
+
+    return jsonify({
+        'success': True,
+        'data': {
+            'matches': history
+        }
+    })
+
+
+@match_bp.route('/block', methods=['POST'])
+@require_auth
+def block_user():
+    """Block a user. Auto-disconnects active match if with that user."""
+    user_id = request.user_id
+    data = request.get_json()
+    blocked_user_id = data.get('userId')
+
+    if not blocked_user_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'userId is required'
+            }
+        }), 400
+
+    if blocked_user_id == user_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'Cannot block yourself'
+            }
+        }), 400
+
+    client = get_client()
+
+    # Check if already blocked
+    existing_query = client.query(kind='Block')
+    existing_query.add_filter('blockerId', '=', user_id)
+    existing_query.add_filter('blockedUserId', '=', blocked_user_id)
+    if list(existing_query.fetch(limit=1)):
+        return jsonify({
+            'success': True,
+            'data': {'message': 'User already blocked'}
+        })
+
+    # Create block entity
+    block_id = str(uuid.uuid4())
+    key = client.key('Block', block_id)
+    entity = Entity(key)
+    entity.update({
+        'blockerId': user_id,
+        'blockedUserId': blocked_user_id,
+        'createdAt': datetime.utcnow().isoformat() + 'Z'
+    })
+    client.put(entity)
+
+    # Auto-disconnect active match if it's with the blocked user
+    today = get_today_date_string()
+    existing_match = get_existing_match(user_id, today)
+    if existing_match and existing_match.get('status') == 'active':
+        is_user1 = existing_match.get('user1Id') == user_id
+        partner_id = existing_match.get('user2Id') if is_user1 else existing_match.get('user1Id')
+        if partner_id == blocked_user_id:
+            existing_match['status'] = 'disconnected'
+            existing_match['disconnectedBy'] = user_id
+            existing_match['updatedAt'] = datetime.utcnow().isoformat() + 'Z'
+            client.put(existing_match)
+
+    return jsonify({
+        'success': True,
+        'data': {
+            'message': 'User blocked successfully'
+        }
+    })
+
+
+@match_bp.route('/report', methods=['POST'])
+@require_auth
+def report_user():
+    """Report a user."""
+    user_id = request.user_id
+    data = request.get_json()
+    reported_user_id = data.get('userId')
+    reason = data.get('reason', '').strip()
+
+    if not reported_user_id:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'userId is required'
+            }
+        }), 400
+
+    if not reason:
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 'VALIDATION_ERROR',
+                'message': 'reason is required'
+            }
+        }), 400
+
+    client = get_client()
+
+    # Find the match for context
+    today = get_today_date_string()
+    existing_match = get_existing_match(user_id, today)
+    match_id = None
+    if existing_match:
+        match_id = existing_match.key.name or str(existing_match.key.id)
+
+    # Create report entity
+    report_id = str(uuid.uuid4())
+    key = client.key('Report', report_id)
+    entity = Entity(key)
+    entity.update({
+        'reporterId': user_id,
+        'reportedUserId': reported_user_id,
+        'reason': reason,
+        'matchId': match_id,
+        'createdAt': datetime.utcnow().isoformat() + 'Z'
+    })
+    client.put(entity)
+
+    return jsonify({
+        'success': True,
+        'data': {
+            'message': 'Report submitted successfully'
         }
     })

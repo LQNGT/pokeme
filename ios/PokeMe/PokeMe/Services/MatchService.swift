@@ -28,4 +28,30 @@ class MatchService {
             token: token
         )
     }
+
+    func getMatchHistory(token: String) async throws -> MatchHistoryResponse {
+        return try await NetworkService.shared.request(
+            endpoint: Constants.Endpoints.matchHistory,
+            method: .GET,
+            token: token
+        )
+    }
+
+    func blockUser(token: String, userId: String) async throws -> BlockResponse {
+        return try await NetworkService.shared.request(
+            endpoint: Constants.Endpoints.block,
+            method: .POST,
+            body: BlockRequest(userId: userId),
+            token: token
+        )
+    }
+
+    func reportUser(token: String, userId: String, reason: String) async throws -> ReportResponse {
+        return try await NetworkService.shared.request(
+            endpoint: Constants.Endpoints.report,
+            method: .POST,
+            body: ReportRequest(userId: userId, reason: reason),
+            token: token
+        )
+    }
 }

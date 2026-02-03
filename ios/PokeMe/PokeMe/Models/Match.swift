@@ -28,3 +28,24 @@ struct PokeResponse: Codable {
     let match: Match
     let message: String
 }
+
+struct MatchHistoryResponse: Codable {
+    let matches: [Match]
+}
+
+struct BlockResponse: Codable {
+    let message: String
+}
+
+struct ReportResponse: Codable {
+    let message: String
+}
+
+struct ReportRequest: Encodable {
+    let userId: String
+    let reason: String
+}
+
+struct BlockRequest: Encodable {
+    let userId: String
+}

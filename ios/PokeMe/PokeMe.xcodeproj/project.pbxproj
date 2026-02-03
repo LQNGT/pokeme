@@ -7,32 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D8C71B0FE30FC939E56A30E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CACC8E6082A6E7EFCE69C64 /* Constants.swift */; };
+		0E3FFF2987DE25C4C9F14529 /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E544F4DB5FAD191C67A05B5A /* ReportView.swift */; };
+		213AADB9CA951441418393B9 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5C4EFC4FE2ED0FDF82A297 /* EditProfileView.swift */; };
+		28287B28F211573429AE20A7 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEBAC808E8633D1F4A8423C /* Constants.swift */; };
 		2B2B8B946F06E72968DDDA80 /* MatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64B60F2397FACE24BCD86520 /* MatchViewModel.swift */; };
-		3A16BD5D2343CB1563BE65F5 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB97E34932BE2D88C528C58A /* ProfileView.swift */; };
+		2D8E8F572E72D37A0DE8351B /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFDDA53A7A67164207410B1 /* ProfileView.swift */; };
+		38F87889FE89B4626741D41C /* MatchHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9092709D553DBD4BA4B840C /* MatchHistoryViewModel.swift */; };
 		3AC42A4183E56ED2B7EE01F4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB19A5FC8ECAC75BD4373DF /* LoginView.swift */; };
 		42AC334042D7C4AC3056B06D /* PokeMeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF95104522024B8B68D2B31 /* PokeMeApp.swift */; };
 		4BD511B7A351B20E233568A0 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963ADC7F0C37B714FA072C5E /* User.swift */; };
-		63FA2DB056534A47E7F1A729 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4293D220CEF13780FF562467 /* Message.swift */; };
+		4DC55C3BC2C3A9B72F8E6F0D /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466C47AE07C39C7E8CA0B2C2 /* ChatViewModel.swift */; };
+		59CEAC63496DD4D63750801F /* MatchHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04FAC77B48212E2270FC500 /* MatchHistoryView.swift */; };
+		601A1507823EE1A9CEE49175 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC2E05E16A35533D15A2A3DA /* MessageService.swift */; };
 		65E42863626E7EBF74BE4D1E /* PhoneAuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01894467B973A4E1A44A04C7 /* PhoneAuthService.swift */; };
 		73DFF8553D8BE009875DA32E /* VerifyCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C0B4AED6D2A3EBF94344697 /* VerifyCodeView.swift */; };
 		795FE257DBA03A9F3D1F0C5C /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5118346218D8C2049721A35 /* AuthViewModel.swift */; };
-		7D3F29CF7288551943221D26 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14FCB344B3F8370AC6DB51F /* EditProfileView.swift */; };
 		7EA71BBECD647895360762A8 /* MatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9D5799EAAFBF84805F94ED /* MatchService.swift */; };
-		830BCC470F8C480FB6A47D07 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CC76A347FDAE938F3AE0487 /* ChatViewModel.swift */; };
 		849F27A578C50678429B7F13 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4619AD9AA4BE71C5739CD8 /* NetworkService.swift */; };
 		86B9052E7665D0813931B106 /* PokeMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16790F95671BCB51DF59DC7D /* PokeMeTests.swift */; };
+		8929BBBFAD3BB740211DEF40 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C017CF4D4B0B0B67012F3774 /* ProfileService.swift */; };
+		8A2E899ED9AD6863AB730213 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AE16152B41F0A1D51188DF /* ChatView.swift */; };
 		A0ABD37782000374CC10F595 /* MatchCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5044193EB50C1D1CA5112F5 /* MatchCardView.swift */; };
-		A5D375809BFC687CE6924B36 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FAB7FEA277127034E8942AB /* MessageService.swift */; };
-		C6721DDC02D3843F27D263DB /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA042010EE252EADC0F83D60 /* ProfileViewModel.swift */; };
-		D32DC4DF7044DC7358FF0208 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AA197A1FD1F1B2D95FB0F19 /* ProfileService.swift */; };
+		A24F459FEB98D9F694BF7F45 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D64ADF58C05995AA54C1FF /* ProfileViewModel.swift */; };
+		CC1AE8447F31AEF039068BC9 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9585E580ABD1E431430D79 /* Message.swift */; };
 		D8CF1B246458C967B8CCE92F /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2009AAFF343A3A959EF007E /* APIResponse.swift */; };
 		DEAE6D07C60D061996582ABE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1D240D2292FC13DBE8C43C /* HomeView.swift */; };
 		E6CC100073B1D69EC90761C3 /* PhoneLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0B99F8F6A39A7EBB6B58D /* PhoneLoginView.swift */; };
 		E6E6AF969629511EF1CE4D2D /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 767C403171D42A4932C5DEAB /* RegisterView.swift */; };
 		EEAFD4C11CB0CBB260334224 /* Match.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE86E5D860927083FB2C3392 /* Match.swift */; };
 		F3D7FE594C44983D1A4CF0E0 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577CE611175CC7D7E7C453C6 /* AuthService.swift */; };
-		FCACCB55FDDE104290742AAF /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB9313AB993FE2599C176F1 /* ChatView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,32 +50,35 @@
 
 /* Begin PBXFileReference section */
 		01894467B973A4E1A44A04C7 /* PhoneAuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneAuthService.swift; sourceTree = "<group>"; };
+		0DFDDA53A7A67164207410B1 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		0E9D5799EAAFBF84805F94ED /* MatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchService.swift; sourceTree = "<group>"; };
 		16790F95671BCB51DF59DC7D /* PokeMeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeMeTests.swift; sourceTree = "<group>"; };
+		25D64ADF58C05995AA54C1FF /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		2BB19A5FC8ECAC75BD4373DF /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		3B1D240D2292FC13DBE8C43C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		4293D220CEF13780FF562467 /* Message.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		4FAB7FEA277127034E8942AB /* MessageService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
+		3BEBAC808E8633D1F4A8423C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		466C47AE07C39C7E8CA0B2C2 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		4D5C4EFC4FE2ED0FDF82A297 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
+		4F9585E580ABD1E431430D79 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		53E0B99F8F6A39A7EBB6B58D /* PhoneLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneLoginView.swift; sourceTree = "<group>"; };
 		577CE611175CC7D7E7C453C6 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
-		5CC76A347FDAE938F3AE0487 /* ChatViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		64B60F2397FACE24BCD86520 /* MatchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchViewModel.swift; sourceTree = "<group>"; };
-		6AA197A1FD1F1B2D95FB0F19 /* ProfileService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		6C0B4AED6D2A3EBF94344697 /* VerifyCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeView.swift; sourceTree = "<group>"; };
+		70AE16152B41F0A1D51188DF /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		767C403171D42A4932C5DEAB /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		7E56F3C0BB3280C7B2BD7149 /* PokeMeTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = PokeMeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B4619AD9AA4BE71C5739CD8 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
-		8CACC8E6082A6E7EFCE69C64 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		963ADC7F0C37B714FA072C5E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		9BB9313AB993FE2599C176F1 /* ChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		B5044193EB50C1D1CA5112F5 /* MatchCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCardView.swift; sourceTree = "<group>"; };
+		C017CF4D4B0B0B67012F3774 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
+		C04FAC77B48212E2270FC500 /* MatchHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchHistoryView.swift; sourceTree = "<group>"; };
 		CBF95104522024B8B68D2B31 /* PokeMeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeMeApp.swift; sourceTree = "<group>"; };
 		CE86E5D860927083FB2C3392 /* Match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
 		D72E1E13C11A400C44CBC0BD /* PokeMe.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA042010EE252EADC0F83D60 /* ProfileViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
-		DB97E34932BE2D88C528C58A /* ProfileView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		D9092709D553DBD4BA4B840C /* MatchHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchHistoryViewModel.swift; sourceTree = "<group>"; };
 		E5118346218D8C2049721A35 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
-		F14FCB344B3F8370AC6DB51F /* EditProfileView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
+		E544F4DB5FAD191C67A05B5A /* ReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportView.swift; sourceTree = "<group>"; };
+		EC2E05E16A35533D15A2A3DA /* MessageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
 		F2009AAFF343A3A959EF007E /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,21 +91,13 @@
 			path = PokeMeTests;
 			sourceTree = "<group>";
 		};
-		1747E44C80C9FFBFB434C20A /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				8CACC8E6082A6E7EFCE69C64 /* Constants.swift */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
 		22A35F2F660D839F9AAE8EC6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				F2009AAFF343A3A959EF007E /* APIResponse.swift */,
 				CE86E5D860927083FB2C3392 /* Match.swift */,
+				4F9585E580ABD1E431430D79 /* Message.swift */,
 				963ADC7F0C37B714FA072C5E /* User.swift */,
-				4293D220CEF13780FF562467 /* Message.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -108,11 +106,12 @@
 			isa = PBXGroup;
 			children = (
 				577CE611175CC7D7E7C453C6 /* AuthService.swift */,
+				3BEBAC808E8633D1F4A8423C /* Constants.swift */,
 				0E9D5799EAAFBF84805F94ED /* MatchService.swift */,
+				EC2E05E16A35533D15A2A3DA /* MessageService.swift */,
 				8B4619AD9AA4BE71C5739CD8 /* NetworkService.swift */,
 				01894467B973A4E1A44A04C7 /* PhoneAuthService.swift */,
-				6AA197A1FD1F1B2D95FB0F19 /* ProfileService.swift */,
-				4FAB7FEA277127034E8942AB /* MessageService.swift */,
+				C017CF4D4B0B0B67012F3774 /* ProfileService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -123,7 +122,6 @@
 				CDE904DD23963331FD89DCB5 /* App */,
 				22A35F2F660D839F9AAE8EC6 /* Models */,
 				2EFD3DB86293129D6D76A22D /* Services */,
-				1747E44C80C9FFBFB434C20A /* Utilities */,
 				5CA85A483228639E1A090595 /* ViewModels */,
 				8E0CC6226EDD240665044B0C /* Views */,
 			);
@@ -145,20 +143,30 @@
 			isa = PBXGroup;
 			children = (
 				E5118346218D8C2049721A35 /* AuthViewModel.swift */,
+				466C47AE07C39C7E8CA0B2C2 /* ChatViewModel.swift */,
+				D9092709D553DBD4BA4B840C /* MatchHistoryViewModel.swift */,
 				64B60F2397FACE24BCD86520 /* MatchViewModel.swift */,
-				DA042010EE252EADC0F83D60 /* ProfileViewModel.swift */,
-				5CC76A347FDAE938F3AE0487 /* ChatViewModel.swift */,
+				25D64ADF58C05995AA54C1FF /* ProfileViewModel.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		6F09E4A7C1545585AC68287C /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				4D5C4EFC4FE2ED0FDF82A297 /* EditProfileView.swift */,
+				0DFDDA53A7A67164207410B1 /* ProfileView.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		8E0CC6226EDD240665044B0C /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				557C458E531E910F9A3F9F03 /* Auth */,
+				D82EF60520C9A45A1A9E9DD5 /* Chat */,
 				CD355D101AEF3C889DD94411 /* Home */,
-				E038717E4E86C34AF08CAD13 /* Profile */,
-				EA650F42A3CB82A238058EEA /* Chat */,
+				6F09E4A7C1545585AC68287C /* Profile */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -177,6 +185,8 @@
 			children = (
 				3B1D240D2292FC13DBE8C43C /* HomeView.swift */,
 				B5044193EB50C1D1CA5112F5 /* MatchCardView.swift */,
+				C04FAC77B48212E2270FC500 /* MatchHistoryView.swift */,
+				E544F4DB5FAD191C67A05B5A /* ReportView.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -189,14 +199,12 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		E038717E4E86C34AF08CAD13 /* Profile */ = {
+		D82EF60520C9A45A1A9E9DD5 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				DB97E34932BE2D88C528C58A /* ProfileView.swift */,
-				F14FCB344B3F8370AC6DB51F /* EditProfileView.swift */,
+				70AE16152B41F0A1D51188DF /* ChatView.swift */,
 			);
-			name = Profile;
-			path = Profile;
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		E7054A08EB8F1403A11B2A6D /* Products */ = {
@@ -206,15 +214,6 @@
 				7E56F3C0BB3280C7B2BD7149 /* PokeMeTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		EA650F42A3CB82A238058EEA /* Chat */ = {
-			isa = PBXGroup;
-			children = (
-				9BB9313AB993FE2599C176F1 /* ChatView.swift */,
-			);
-			name = Chat;
-			path = Chat;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -232,6 +231,8 @@
 				430C3D2B76F3FCD07CFAA2A1 /* PBXTargetDependency */,
 			);
 			name = PokeMeTests;
+			packageProductDependencies = (
+			);
 			productName = PokeMeTests;
 			productReference = 7E56F3C0BB3280C7B2BD7149 /* PokeMeTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -247,6 +248,8 @@
 			dependencies = (
 			);
 			name = PokeMe;
+			packageProductDependencies = (
+			);
 			productName = PokeMe;
 			productReference = D72E1E13C11A400C44CBC0BD /* PokeMe.app */;
 			productType = "com.apple.product-type.application";
@@ -279,7 +282,6 @@
 			mainGroup = A9249D65E77EE4517CD60E7E;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = E7054A08EB8F1403A11B2A6D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -305,28 +307,31 @@
 				D8CF1B246458C967B8CCE92F /* APIResponse.swift in Sources */,
 				F3D7FE594C44983D1A4CF0E0 /* AuthService.swift in Sources */,
 				795FE257DBA03A9F3D1F0C5C /* AuthViewModel.swift in Sources */,
-				1D8C71B0FE30FC939E56A30E /* Constants.swift in Sources */,
+				8A2E899ED9AD6863AB730213 /* ChatView.swift in Sources */,
+				4DC55C3BC2C3A9B72F8E6F0D /* ChatViewModel.swift in Sources */,
+				28287B28F211573429AE20A7 /* Constants.swift in Sources */,
+				213AADB9CA951441418393B9 /* EditProfileView.swift in Sources */,
 				DEAE6D07C60D061996582ABE /* HomeView.swift in Sources */,
 				3AC42A4183E56ED2B7EE01F4 /* LoginView.swift in Sources */,
 				EEAFD4C11CB0CBB260334224 /* Match.swift in Sources */,
 				A0ABD37782000374CC10F595 /* MatchCardView.swift in Sources */,
+				59CEAC63496DD4D63750801F /* MatchHistoryView.swift in Sources */,
+				38F87889FE89B4626741D41C /* MatchHistoryViewModel.swift in Sources */,
 				7EA71BBECD647895360762A8 /* MatchService.swift in Sources */,
 				2B2B8B946F06E72968DDDA80 /* MatchViewModel.swift in Sources */,
+				CC1AE8447F31AEF039068BC9 /* Message.swift in Sources */,
+				601A1507823EE1A9CEE49175 /* MessageService.swift in Sources */,
 				849F27A578C50678429B7F13 /* NetworkService.swift in Sources */,
 				65E42863626E7EBF74BE4D1E /* PhoneAuthService.swift in Sources */,
 				E6CC100073B1D69EC90761C3 /* PhoneLoginView.swift in Sources */,
 				42AC334042D7C4AC3056B06D /* PokeMeApp.swift in Sources */,
+				8929BBBFAD3BB740211DEF40 /* ProfileService.swift in Sources */,
+				2D8E8F572E72D37A0DE8351B /* ProfileView.swift in Sources */,
+				A24F459FEB98D9F694BF7F45 /* ProfileViewModel.swift in Sources */,
 				E6E6AF969629511EF1CE4D2D /* RegisterView.swift in Sources */,
+				0E3FFF2987DE25C4C9F14529 /* ReportView.swift in Sources */,
 				4BD511B7A351B20E233568A0 /* User.swift in Sources */,
 				73DFF8553D8BE009875DA32E /* VerifyCodeView.swift in Sources */,
-				D32DC4DF7044DC7358FF0208 /* ProfileService.swift in Sources */,
-				C6721DDC02D3843F27D263DB /* ProfileViewModel.swift in Sources */,
-				3A16BD5D2343CB1563BE65F5 /* ProfileView.swift in Sources */,
-				7D3F29CF7288551943221D26 /* EditProfileView.swift in Sources */,
-				63FA2DB056534A47E7F1A729 /* Message.swift in Sources */,
-				A5D375809BFC687CE6924B36 /* MessageService.swift in Sources */,
-				830BCC470F8C480FB6A47D07 /* ChatViewModel.swift in Sources */,
-				FCACCB55FDDE104290742AAF /* ChatView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

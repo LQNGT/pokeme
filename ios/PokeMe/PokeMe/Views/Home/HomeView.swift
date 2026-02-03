@@ -5,7 +5,12 @@ struct HomeView: View {
     @StateObject private var matchViewModel = MatchViewModel()
     @State private var showProfile = false
     @State private var showChat = false
+    @State private var showMatchHistory = false
+    @State private var showDisconnectAlert = false
+    @State private var showReportSheet = false
+    @State private var showBlockAlert = false
     @State private var currentPartnerName = ""
+    @State private var currentPartnerId = ""
 
     var body: some View {
         NavigationView {
@@ -33,12 +38,18 @@ struct HomeView: View {
                         }, onChat: {
                             currentPartnerName = match.partnerName
                             showChat = true
+                        }, onBlock: {
+                            currentPartnerId = match.partnerId
+                            currentPartnerName = match.partnerName
+                            showBlockAlert = true
+                        }, onReport: {
+                            currentPartnerId = match.partnerId
+                            currentPartnerName = match.partnerName
+                            showReportSheet = true
                         })
 
                         Button(action: {
-                            Task {
-                                await matchViewModel.disconnect(token: authViewModel.getToken())
-                            }
+                            showDisconnectAlert = true
                         }) {
                             HStack {
                                 Image(systemName: "xmark.circle")
@@ -135,6 +146,11 @@ struct HomeView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
                         Button(action: {
+                            showMatchHistory = true
+                        }) {
+                            Label("Match History", systemImage: "clock.arrow.circlepath")
+                        }
+                        Button(action: {
                             showProfile = true
                         }) {
                             Label("Profile", systemImage: "person.crop.circle")
@@ -157,6 +173,44 @@ struct HomeView: View {
             .sheet(isPresented: $showChat) {
                 ChatView(partnerName: currentPartnerName)
                     .environmentObject(authViewModel)
+            }
+            .sheet(isPresented: $showMatchHistory) {
+                MatchHistoryView()
+                    .environmentObject(authViewModel)
+            }
+            .sheet(isPresented: $showReportSheet) {
+                ReportView(partnerName: currentPartnerName) { reason in
+                    Task {
+                        _ = await matchViewModel.reportUser(
+                            token: authViewModel.getToken(),
+                            userId: currentPartnerId,
+                            reason: reason
+                        )
+                    }
+                }
+            }
+            .alert("Are you sure?", isPresented: $showDisconnectAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Disconnect", role: .destructive) {
+                    Task {
+                        await matchViewModel.disconnect(token: authViewModel.getToken())
+                    }
+                }
+            } message: {
+                Text("You won't be able to match with anyone else until tomorrow. Only disconnect if necessary.")
+            }
+            .alert("Block \(currentPartnerName)?", isPresented: $showBlockAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Block", role: .destructive) {
+                    Task {
+                        _ = await matchViewModel.blockUser(
+                            token: authViewModel.getToken(),
+                            userId: currentPartnerId
+                        )
+                    }
+                }
+            } message: {
+                Text("You will be disconnected and never matched with this person again.")
             }
             .task {
                 await matchViewModel.fetchTodayMatch(token: authViewModel.getToken())

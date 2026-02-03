@@ -101,6 +101,29 @@ class MatchViewModel: ObservableObject {
         }
     }
 
+    func blockUser(token: String?, userId: String) async -> Bool {
+        guard let token = token else { return false }
+
+        do {
+            _ = try await MatchService.shared.blockUser(token: token, userId: userId)
+            matchState = .disconnected(nextMatchAt: "tomorrow")
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    func reportUser(token: String?, userId: String, reason: String) async -> Bool {
+        guard let token = token else { return false }
+
+        do {
+            _ = try await MatchService.shared.reportUser(token: token, userId: userId, reason: reason)
+            return true
+        } catch {
+            return false
+        }
+    }
+
     func startPolling(token: String?) {
         stopPolling()
         let timer = Timer(timeInterval: 5.0, repeats: true) { [weak self] _ in

@@ -4,9 +4,28 @@ struct MatchCardView: View {
     let match: Match
     let onPoke: () -> Void
     let onChat: () -> Void
+    let onBlock: () -> Void
+    let onReport: () -> Void
 
     var body: some View {
         VStack(spacing: 16) {
+            // Header with overflow menu
+            HStack {
+                Spacer()
+                Menu {
+                    Button(role: .destructive, action: onBlock) {
+                        Label("Block User", systemImage: "hand.raised")
+                    }
+                    Button(action: onReport) {
+                        Label("Report User", systemImage: "flag")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                }
+            }
+
             // Avatar placeholder
             Circle()
                 .fill(Color.blue.gradient)
@@ -122,6 +141,8 @@ struct MatchCardView: View {
             createdAt: "2026-02-01T12:00:00Z"
         ),
         onPoke: {},
-        onChat: {}
+        onChat: {},
+        onBlock: {},
+        onReport: {}
     )
 }
