@@ -220,6 +220,58 @@ def get_incoming_pokes():
 # Matches
 # ──────────────────────────────────────────────
 
+@match_bp.route('/admin/debug-discover', methods=['GET'])
+@require_auth
+def debug_discover():
+    """Debug endpoint to see why a user might not appear in discover."""
+    user_id = request.user_id
+    sport_filter = request.args.get('sport')
+    client = get_client()
+
+    # Get poked IDs
+    poke_query = client.query(kind='Poke')
+    poke_query.add_filter('fromUserId', '=', user_id)
+    poked_ids = set(p.get('toUserId') for p in poke_query.fetch())
+
+    # Get matched IDs
+    matched_ids = set()
+    for field in ['user1Id', 'user2Id']:
+        q = client.query(kind='Match')
+        q.add_filter(field, '=', user_id)
+        q.add_filter('status', '=', 'active')
+        for m in q.fetch():
+            other = m.get('user2Id') if field == 'user1Id' else m.get('user1Id')
+            matched_ids.add(other)
+
+    exclude_ids = poked_ids | matched_ids | {user_id}
+
+    # Check all users with the sport
+    all_users = list(client.query(kind='User').fetch())
+    all_with_sport = []
+    for u in all_users:
+        uid = u.key.name or str(u.key.id)
+        user_sports = u.get('sports', [])
+        sport_names = [s.get('sport', '').lower() for s in user_sports]
+        if sport_filter and sport_filter.lower() in sport_names:
+            all_with_sport.append({
+                'id': uid,
+                'name': u.get('displayName'),
+                'excluded': uid in exclude_ids,
+                'reason': 'poked' if uid in poked_ids else ('matched' if uid in matched_ids else ('self' if uid == user_id else None))
+            })
+
+    return jsonify({
+        'success': True,
+        'data': {
+            'userId': user_id,
+            'sportFilter': sport_filter,
+            'pokedIds': list(poked_ids),
+            'matchedIds': list(matched_ids),
+            'usersWithSport': all_with_sport
+        }
+    })
+
+
 @match_bp.route('/admin/reset', methods=['POST'])
 @require_auth
 def reset_user_data():
