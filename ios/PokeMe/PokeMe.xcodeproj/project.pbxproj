@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D4E5F60718293A4B5C6D7E8F /* MessageNotificationPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F60718293A4B5C6D /* MessageNotificationPoller.swift */; };
+		E5F60718293A4B5C6D7E8FA1 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E2C3D4B5F60718293A4B5C /* NotificationManager.swift */; };
 		1D8C71B0FE30FC939E56A30E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CACC8E6082A6E7EFCE69C64 /* Constants.swift */; };
 		247748958111D7EEC35F8380 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8CD4925A6B741F2853401F3 /* DiscoverViewModel.swift */; };
 		2B2B8B946F06E72968DDDA80 /* MatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64B60F2397FACE24BCD86520 /* MatchViewModel.swift */; };
@@ -395,6 +397,7 @@
 				7EA71BBECD647895360762A8 /* MatchService.swift in Sources */,
 				2B2B8B946F06E72968DDDA80 /* MatchViewModel.swift in Sources */,
 				D4E5F60718293A4B5C6D7E8F /* MessageNotificationPoller.swift in Sources */,
+				E5F60718293A4B5C6D7E8FA1 /* NotificationManager.swift in Sources */,
 				849F27A578C50678429B7F13 /* NetworkService.swift in Sources */,
 				65E42863626E7EBF74BE4D1E /* PhoneAuthService.swift in Sources */,
 				E6CC100073B1D69EC90761C3 /* PhoneLoginView.swift in Sources */,

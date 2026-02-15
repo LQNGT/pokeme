@@ -42,15 +42,9 @@ class MessageNotificationPoller: ObservableObject {
     }
 
     private func fetchAndNotify(token: String, currentUserId: String) async {
+        guard let matchId = currentMatchId else { return }
         do {
-            let response = try await MessageService.shared.getMessages(token: token)
-
-            if currentMatchId == nil {
-                currentMatchId = response.matchId
-            } else if response.matchId != currentMatchId {
-                currentMatchId = response.matchId
-                resetTracking()
-            }
+            let response = try await MessageService.shared.getMessages(token: token, matchId: matchId)
 
             let partnerMessages = response.messages.filter { $0.senderId != currentUserId }
             guard let latestPartnerMessage = partnerMessages.max(by: { $0.createdAt < $1.createdAt }) else {

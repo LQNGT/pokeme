@@ -34,10 +34,6 @@ struct PokeMeApp: App {
             }
             .preferredColorScheme(colorScheme)
             .onAppear {
-                UNUserNotificationCenter.current().requestAuthorization(
-                    options: [.alert, .badge, .sound]
-                ) { _, _ in }
-            .onAppear {
                 NotificationManager.shared.requestAuthorizationIfNeeded()
             }
         }
