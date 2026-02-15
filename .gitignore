@@ -1,1 +1,10 @@
 .venv/
+.DS_Store
+ios/PokeMe/.DS_Store
+
+# Xcode user data
+*.xcuserstate
+*.xcuserdata
+xcuserdata/
+ios/PokeMe/PokeMe.xcodeproj/project.xcworkspace/xcuserdata/
+ios/PokeMe/PokeMe.xcodeproj/xcuserdata/
