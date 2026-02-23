@@ -7,71 +7,83 @@ struct IncomingPokesView: View {
 
     var body: some View {
         NavigationView {
-            Group {
-                if viewModel.isLoading {
-                    VStack(spacing: 12) {
-                        ProgressView()
-                            .tint(.orange)
-                        Text("Loading pokes...")
-                            .foregroundColor(.secondary)
-                    }
-                } else if viewModel.incomingPokes.isEmpty {
-                    VStack(spacing: 20) {
-                        ZStack {
-                            Circle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.orange.opacity(0.15), .pink.opacity(0.15)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                                .frame(width: 120, height: 120)
-                                .scaleEffect(animateEmpty ? 1.1 : 1.0)
-                                .animation(
-                                    .easeInOut(duration: 2).repeatForever(autoreverses: true),
-                                    value: animateEmpty
-                                )
+            ZStack {
+                UCDavisBackground()
 
-                            Image(systemName: "hand.point.right.fill")
-                                .font(.system(size: 50))
-                                .foregroundStyle(
-                                    .linearGradient(
-                                        colors: [.orange, .pink],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                Group {
+                    if viewModel.isLoading {
+                        VStack(spacing: 12) {
+                            ProgressView()
+                                .tint(UCDavisPalette.gold)
+                            Text("Loading pokes...")
+                                .foregroundColor(UCDavisPalette.cream.opacity(0.84))
                         }
-
-                        Text("No pokes yet")
-                            .font(.title2)
-                            .fontWeight(.bold)
-
-                        Text("When someone pokes you, they'll show up here!")
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
-                    .onAppear { animateEmpty = true }
-                } else {
-                    List(viewModel.incomingPokes) { poke in
-                        IncomingPokeRow(
-                            poke: poke,
-                            onPokeBack: {
-                                Task {
-                                    await viewModel.pokeBack(
-                                        token: authViewModel.getToken(),
-                                        userId: poke.fromUserId
+                    } else if viewModel.incomingPokes.isEmpty {
+                        VStack(spacing: 20) {
+                            ZStack {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [UCDavisPalette.gold.opacity(0.15), UCDavisPalette.deepBlue.opacity(0.15)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
                                     )
-                                }
+                                    .frame(width: 120, height: 120)
+                                    .scaleEffect(animateEmpty ? 1.1 : 1.0)
+                                    .animation(
+                                        .easeInOut(duration: 2).repeatForever(autoreverses: true),
+                                        value: animateEmpty
+                                    )
+
+                                Image(systemName: "hand.point.right.fill")
+                                    .font(.system(size: 50))
+                                    .foregroundStyle(
+                                        .linearGradient(
+                                            colors: [UCDavisPalette.gold, UCDavisPalette.deepBlue],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
                             }
-                        )
+
+                            Text("No pokes yet")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(UCDavisPalette.cream.opacity(0.92))
+
+                            Text("When someone pokes you, they'll show up here!")
+                                .foregroundColor(UCDavisPalette.cream.opacity(0.84))
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding()
+                        .onAppear { animateEmpty = true }
+                    } else {
+                        List(viewModel.incomingPokes) { poke in
+                            IncomingPokeRow(
+                                poke: poke,
+                                onPokeBack: {
+                                    Task {
+                                        await viewModel.pokeBack(
+                                            token: authViewModel.getToken(),
+                                            userId: poke.fromUserId
+                                        )
+                                    }
+                                }
+                            )
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .padding(.vertical, 4)
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
                     }
-                    .listStyle(.plain)
                 }
+                .foregroundColor(UCDavisPalette.gold)
             }
             .navigationTitle("Pokes")
+            .tint(UCDavisPalette.gold)
             .task {
                 await viewModel.fetchIncomingPokes(token: authViewModel.getToken())
             }
@@ -99,52 +111,17 @@ struct IncomingPokeRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Avatar with gradient border
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.orange, .pink, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 56, height: 56)
-
-                if let pictureData = poke.fromUser.profilePicture,
-                   let imageData = Data(base64Encoded: pictureData.replacingOccurrences(of: "data:image/jpeg;base64,", with: "")),
-                   let uiImage = UIImage(data: imageData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(Color(.systemBackground))
-                        .frame(width: 50, height: 50)
-                        .overlay(
-                            Text(poke.fromUser.displayName.prefix(1).uppercased())
-                                .font(.system(size: 20, weight: .bold, design: .rounded))
-                                .foregroundStyle(
-                                    .linearGradient(
-                                        colors: [.orange, .pink],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                        )
-                }
-            }
+            AvatarView(base64Picture: poke.fromUser.profilePicture, displayName: poke.fromUser.displayName)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(poke.fromUser.displayName)
                     .font(.headline)
+                    .foregroundColor(UCDavisPalette.gold)
 
                 if let sports = poke.fromUser.sports, !sports.isEmpty {
                     Text(sports.map { $0.sport }.joined(separator: ", "))
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(UCDavisPalette.gold.opacity(0.72))
                         .lineLimit(1)
                 }
             }
@@ -159,17 +136,13 @@ struct IncomingPokeRow: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(
-                        LinearGradient(
-                            colors: [.orange, .pink],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .background(UCDavisPalette.deepBlue)
                     .cornerRadius(20)
             }
+            .accessibilityLabel("Poke back \(poke.fromUser.displayName)")
         }
-        .padding(.vertical, 4)
+        .padding(12)
+        .ucDavisCardSurface()
         .opacity(appeared ? 1 : 0)
         .offset(x: appeared ? 0 : 20)
         .onAppear {

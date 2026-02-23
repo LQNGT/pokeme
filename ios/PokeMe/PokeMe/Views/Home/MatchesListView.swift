@@ -4,63 +4,121 @@ struct MatchesListView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel = MatchViewModel()
     @State private var selectedMatch: Match?
+    @State private var pendingEventMessage: String?
     @State private var animateEmpty = false
+    @State private var friends: [FriendProfile] = FriendStore.shared.allFriends()
+
+    private var friendIDs: Set<String> {
+        Set(friends.map(\.id))
+    }
 
     var body: some View {
         NavigationView {
-            Group {
-                if viewModel.isLoading {
-                    VStack(spacing: 12) {
-                        ProgressView()
-                            .tint(.orange)
-                        Text("Loading matches...")
-                            .foregroundColor(.secondary)
-                    }
-                } else if viewModel.matches.isEmpty {
-                    VStack(spacing: 20) {
-                        ZStack {
-                            Circle()
-                                .fill(
-                                    LinearGradient(colors: [.orange.opacity(0.15), .pink.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                )
-                                .frame(width: 120, height: 120)
-                                .scaleEffect(animateEmpty ? 1.1 : 1.0)
-                                .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: animateEmpty)
+            ZStack {
+                UCDavisBackground()
 
-                            Image(systemName: "message.badge.fill")
-                                .font(.system(size: 50))
-                                .foregroundStyle(
-                                    .linearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                )
+                Group {
+                    if viewModel.isLoading {
+                        VStack(spacing: 12) {
+                            ProgressView()
+                                .tint(UCDavisPalette.gold)
+                            Text("Loading matches...")
+                                .foregroundColor(UCDavisPalette.cream.opacity(0.84))
                         }
+                    } else if viewModel.matches.isEmpty {
+                        VStack(spacing: 20) {
+                            ZStack {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [UCDavisPalette.gold.opacity(0.18), UCDavisPalette.deepBlue.opacity(0.18)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .frame(width: 120, height: 120)
+                                    .scaleEffect(animateEmpty ? 1.1 : 1.0)
+                                    .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: animateEmpty)
 
-                        Text("No matches yet")
-                            .font(.title2)
-                            .fontWeight(.bold)
+                                Image(systemName: "message.badge.fill")
+                                    .font(.system(size: 50))
+                                    .foregroundStyle(
+                                        .linearGradient(
+                                            colors: [UCDavisPalette.gold, UCDavisPalette.deepBlue],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                            }
 
-                        Text("Poke people in Discover to get matched!")
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
-                    .onAppear { animateEmpty = true }
-                } else {
-                    List(viewModel.matches) { match in
-                        Button(action: {
-                            selectedMatch = match
-                        }) {
-                            MatchRow(match: match, currentUserId: authViewModel.user?.id ?? "")
+                            Text("No matches yet")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(UCDavisPalette.cream.opacity(0.92))
+
+                            Text("Poke people in Discover to get matched!")
+                                .foregroundColor(UCDavisPalette.cream.opacity(0.84))
+                                .multilineTextAlignment(.center)
                         }
+                        .padding()
+                        .onAppear { animateEmpty = true }
+                    } else {
+                        List(viewModel.matches) { match in
+                            Button(action: {
+                                if match.status == "event_joiner" {
+                                    pendingEventMessage = "This player joined your event and is now visible in Matches. Chat unlocks once you become a full match."
+                                } else {
+                                    selectedMatch = match
+                                }
+                            }) {
+                                MatchRow(
+                                    match: match,
+                                    currentUserId: authViewModel.user?.id ?? "",
+                                    isFriend: friendIDs.contains(match.partnerId)
+                                )
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .padding(.vertical, 4)
+                            }
+                            .buttonStyle(.plain)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                if friendIDs.contains(match.partnerId) {
+                                    Button("Unfriend", role: .destructive) {
+                                        FriendStore.shared.removeFriend(userId: match.partnerId)
+                                        refreshFriends()
+                                    }
+                                    .accessibilityLabel("Unfriend \(match.partnerName)")
+                                } else {
+                                    Button("Add Friend") {
+                                        FriendStore.shared.addFriend(userId: match.partnerId, displayName: match.partnerName)
+                                        refreshFriends()
+                                    }
+                                    .tint(.green)
+                                    .accessibilityLabel("Add \(match.partnerName) as friend")
+                                }
+                            }
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.clear)
                     }
-                    .listStyle(.plain)
                 }
+                .foregroundColor(UCDavisPalette.gold)
             }
             .navigationTitle("Matches")
+            .tint(UCDavisPalette.gold)
             .task {
-                await viewModel.fetchMatches(token: authViewModel.getToken())
+                await viewModel.fetchMatches(
+                    token: authViewModel.getToken(),
+                    currentUser: authViewModel.user
+                )
             }
             .onAppear {
-                viewModel.startPolling(token: authViewModel.getToken())
+                viewModel.startPolling(
+                    token: authViewModel.getToken(),
+                    currentUserProvider: { authViewModel.user }
+                )
+                refreshFriends()
             }
             .onDisappear {
                 viewModel.stopPolling()
@@ -69,50 +127,55 @@ struct MatchesListView: View {
                 ChatView(matchId: match.id, partnerName: match.partnerName)
                     .environmentObject(authViewModel)
             }
+            .alert(
+                "Pending Match",
+                isPresented: Binding(
+                    get: { pendingEventMessage != nil },
+                    set: { if !$0 { pendingEventMessage = nil } }
+                )
+            ) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(pendingEventMessage ?? "")
+            }
         }
+    }
+
+    private func refreshFriends() {
+        friends = FriendStore.shared.allFriends()
     }
 }
 
 struct MatchRow: View {
     let match: Match
     let currentUserId: String
+    let isFriend: Bool
 
     var body: some View {
         HStack(spacing: 12) {
-            // Avatar with gradient border
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(colors: [.orange, .pink, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    .frame(width: 56, height: 56)
-
-                if let pictureData = match.partnerProfilePicture,
-                   let imageData = Data(base64Encoded: pictureData.replacingOccurrences(of: "data:image/jpeg;base64,", with: "")),
-                   let uiImage = UIImage(data: imageData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(Color(.systemBackground))
-                        .frame(width: 50, height: 50)
-                        .overlay(
-                            Text(match.partnerName.prefix(1).uppercased())
-                                .font(.system(size: 20, weight: .bold, design: .rounded))
-                                .foregroundStyle(
-                                    .linearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                )
-                        )
-                }
-            }
+            AvatarView(base64Picture: match.partnerProfilePicture, displayName: match.partnerName)
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(match.partnerName)
                         .font(.headline)
+                        .foregroundColor(UCDavisPalette.gold)
+
+                    if match.status == "event_joiner" {
+                        Text("Joined Event")
+                            .font(.caption2.weight(.semibold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(UCDavisPalette.gold.opacity(0.90))
+                            .foregroundColor(UCDavisPalette.navy)
+                            .clipShape(Capsule())
+                    }
+
+                    if isFriend {
+                        Image(systemName: "person.fill.checkmark")
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
 
                     if let sports = match.partnerSports, !sports.isEmpty {
                         Text(sportEmoji(sports.first?.sport ?? ""))
@@ -123,13 +186,13 @@ struct MatchRow: View {
                 if let lastMessage = match.lastMessage {
                     Text(lastMessage.text)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(UCDavisPalette.gold.opacity(0.72))
                         .lineLimit(1)
                 } else {
                     Text("Start chatting!")
                         .font(.subheadline)
                         .foregroundStyle(
-                            .linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                            .linearGradient(colors: [UCDavisPalette.gold, UCDavisPalette.deepBlue], startPoint: .leading, endPoint: .trailing)
                         )
                         .italic()
                 }
@@ -138,55 +201,13 @@ struct MatchRow: View {
             Spacer()
 
             if let lastMessage = match.lastMessage {
-                Text(formatTime(lastMessage.createdAt))
+                Text(formatMessageTime(lastMessage.createdAt))
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(UCDavisPalette.gold.opacity(0.72))
             }
         }
-        .padding(.vertical, 4)
+        .padding(12)
+        .ucDavisCardSurface()
     }
 
-    private func sportEmoji(_ sport: String) -> String {
-        switch sport.lowercased() {
-        case "basketball": return "🏀"
-        case "tennis": return "🎾"
-        case "soccer": return "⚽"
-        case "volleyball": return "🏐"
-        case "badminton": return "🏸"
-        case "running": return "🏃"
-        case "swimming": return "🏊"
-        case "cycling": return "🚴"
-        case "table tennis": return "🏓"
-        case "football": return "🏈"
-        case "baseball": return "⚾"
-        case "golf": return "⛳"
-        case "hiking": return "🥾"
-        case "yoga": return "🧘"
-        case "rock climbing": return "🧗"
-        default: return "🏅"
-        }
-    }
-
-    private func formatTime(_ isoString: String) -> String {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        var date: Date?
-        date = formatter.date(from: isoString)
-
-        if date == nil {
-            formatter.formatOptions = [.withInternetDateTime]
-            date = formatter.date(from: isoString)
-        }
-
-        guard let date = date else { return "" }
-
-        let displayFormatter = DateFormatter()
-        if Calendar.current.isDateInToday(date) {
-            displayFormatter.timeStyle = .short
-        } else {
-            displayFormatter.dateStyle = .short
-        }
-        return displayFormatter.string(from: date)
-    }
 }

@@ -15,107 +15,129 @@ struct ChatView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Messages list
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(viewModel.messages) { message in
-                                if message.isSessionProposal || message.isSessionResponse {
-                                    SessionProposalBubble(
-                                        message: message,
-                                        currentUserId: authViewModel.user?.id ?? "",
-                                        onAccept: { sessionId in
-                                            Task {
-                                                await viewModel.respondToSession(
-                                                    token: authViewModel.getToken(),
-                                                    sessionId: sessionId,
-                                                    action: "accept"
-                                                )
+            ZStack {
+                UCDavisBackground()
+
+                VStack(spacing: 0) {
+                    // Messages list
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(spacing: 16) {
+                                ForEach(viewModel.messages) { message in
+                                    if message.isSessionProposal || message.isSessionResponse {
+                                        SessionProposalBubble(
+                                            message: message,
+                                            currentUserId: authViewModel.user?.id ?? "",
+                                            onAccept: { sessionId in
+                                                Task {
+                                                    await viewModel.respondToSession(
+                                                        token: authViewModel.getToken(),
+                                                        sessionId: sessionId,
+                                                        action: "accept"
+                                                    )
+                                                }
+                                            },
+                                            onDecline: { sessionId in
+                                                Task {
+                                                    await viewModel.respondToSession(
+                                                        token: authViewModel.getToken(),
+                                                        sessionId: sessionId,
+                                                        action: "decline"
+                                                    )
+                                                }
                                             }
-                                        },
-                                        onDecline: { sessionId in
-                                            Task {
-                                                await viewModel.respondToSession(
-                                                    token: authViewModel.getToken(),
-                                                    sessionId: sessionId,
-                                                    action: "decline"
-                                                )
+                                        )
+                                        .id(message.id)
+                                    } else {
+                                        MessageBubble(
+                                            message: message,
+                                            currentUserId: authViewModel.user?.id ?? "",
+                                            onReactionTap: {
+                                                selectedMessageForReaction = message
                                             }
-                                        }
-                                    )
-                                    .id(message.id)
-                                } else {
-                                    MessageBubble(
-                                        message: message,
-                                        currentUserId: authViewModel.user?.id ?? "",
-                                        onReactionTap: {
-                                            selectedMessageForReaction = message
-                                        }
-                                    )
-                                    .id(message.id)
+                                        )
+                                        .id(message.id)
+                                    }
+                                }
+
+                                if viewModel.partnerIsTyping {
+                                    TypingIndicatorView()
+                                        .id("typing-indicator")
+                                }
+                            }
+                            .padding()
+                        }
+                        .onChange(of: viewModel.messages.count) { _ in
+                            scrollToBottom(proxy: proxy)
+                        }
+                        .onChange(of: viewModel.partnerIsTyping) { _ in
+                            scrollToBottom(proxy: proxy)
+                        }
+                    }
+
+                    Divider()
+                        .overlay(UCDavisPalette.border)
+
+                    // Input bar
+                    HStack(spacing: 12) {
+                        TextField("Message...", text: $messageText)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(UCDavisPalette.surfaceMuted)
+                            .foregroundColor(UCDavisPalette.textPrimary)
+                            .cornerRadius(20)
+                            .focused($isInputFocused)
+                            .submitLabel(.send)
+                            .onSubmit { sendMessage() }
+                            .onChange(of: messageText) { newValue in
+                                if !newValue.isEmpty {
+                                    viewModel.userIsTyping(token: authViewModel.getToken())
                                 }
                             }
 
-                            if viewModel.partnerIsTyping {
-                                TypingIndicatorView()
-                                    .id("typing-indicator")
-                            }
-                        }
-                        .padding()
-                    }
-                    .onChange(of: viewModel.messages.count) { _ in
-                        scrollToBottom(proxy: proxy)
-                    }
-                    .onChange(of: viewModel.partnerIsTyping) { _ in
-                        scrollToBottom(proxy: proxy)
-                    }
-                }
-
-                Divider()
-
-                // Input bar
-                HStack(spacing: 12) {
-                    TextField("Message...", text: $messageText)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(20)
-                        .focused($isInputFocused)
-                        .onChange(of: messageText) { newValue in
-                            if !newValue.isEmpty {
-                                viewModel.userIsTyping(token: authViewModel.getToken())
-                            }
-                        }
-
-                    Button(action: sendMessage) {
-                        if viewModel.isSending {
-                            ProgressView()
-                                .tint(.orange)
-                                .frame(width: 36, height: 36)
-                        } else {
-                            ZStack {
-                                Circle()
-                                    .fill(
-                                        messageText.isEmpty
-                                            ? LinearGradient(colors: [Color(.systemGray4), Color(.systemGray4)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                            : LinearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                    )
+                        Button(action: sendMessage) {
+                            if viewModel.isSending {
+                                ProgressView()
+                                    .tint(UCDavisPalette.gold)
                                     .frame(width: 36, height: 36)
-                                Image(systemName: "arrow.up")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(.white)
+                            } else {
+                                ZStack {
+                                    Circle()
+                                        .fill(
+                                            messageText.isEmpty
+                                                ? LinearGradient(
+                                                    colors: [UCDavisPalette.surfaceMuted, UCDavisPalette.surfaceMuted],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                )
+                                                : LinearGradient(
+                                                    colors: [UCDavisPalette.deepBlue, UCDavisPalette.navy],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                )
+                                        )
+                                        .frame(width: 36, height: 36)
+                                    Image(systemName: "arrow.up")
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundColor(.white)
+                                }
                             }
                         }
+                        .disabled(messageText.isEmpty || viewModel.isSending)
+                        .accessibilityLabel("Send message")
                     }
-                    .disabled(messageText.isEmpty || viewModel.isSending)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(UCDavisPalette.surface.opacity(0.96))
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(.ultraThinMaterial)
+                .ucDavisCardSurface(cornerRadius: 18)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+                .foregroundColor(UCDavisPalette.gold)
             }
             .navigationTitle(partnerName)
             .navigationBarTitleDisplayMode(.inline)
+            .tint(UCDavisPalette.gold)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: { dismiss() }) {
@@ -125,14 +147,15 @@ struct ChatView: View {
                         }
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundColor(.orange)
+                        .foregroundColor(UCDavisPalette.gold)
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showProposalSheet = true }) {
                         Image(systemName: "calendar.badge.plus")
-                            .foregroundColor(.orange)
+                            .foregroundColor(UCDavisPalette.gold)
                     }
+                    .accessibilityLabel("Schedule session")
                 }
             }
             .onAppear {
@@ -214,7 +237,7 @@ struct TypingIndicatorView: View {
     let timer = Timer.publish(every: 0.3, on: .main, in: .common).autoconnect()
     @State private var currentDot = 0
 
-    private let dotColors: [Color] = [.orange, .pink, .purple]
+    private let dotColors: [Color] = [UCDavisPalette.gold, UCDavisPalette.deepBlue, UCDavisPalette.navy]
 
     var body: some View {
         HStack {
@@ -228,7 +251,7 @@ struct TypingIndicatorView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 14)
-            .background(Color(.systemGray6))
+            .background(UCDavisPalette.surfaceMuted)
             .cornerRadius(20)
 
             Spacer()
@@ -256,7 +279,7 @@ struct ReactionPickerSheet: View {
             Text("React to message")
                 .font(.headline)
                 .foregroundStyle(
-                    .linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                    .linearGradient(colors: [UCDavisPalette.gold, UCDavisPalette.deepBlue], startPoint: .leading, endPoint: .trailing)
                 )
                 .padding(.top)
 
@@ -270,8 +293,16 @@ struct ReactionPickerSheet: View {
                             .padding(8)
                             .background(
                                 hasUserReacted(with: emoji)
-                                    ? LinearGradient(colors: [.orange.opacity(0.3), .pink.opacity(0.3)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                    : LinearGradient(colors: [Color(.systemGray6), Color(.systemGray6)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                    ? LinearGradient(
+                                        colors: [UCDavisPalette.softGold, UCDavisPalette.softBlue],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                    : LinearGradient(
+                                        colors: [UCDavisPalette.surfaceMuted, UCDavisPalette.surfaceMuted],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
                             )
                             .cornerRadius(12)
                     }
@@ -283,10 +314,11 @@ struct ReactionPickerSheet: View {
             Button("Cancel") {
                 onDismiss()
             }
-            .foregroundColor(.secondary)
+            .foregroundColor(UCDavisPalette.textMuted)
             .padding(.bottom, 8)
         }
         .padding()
+        .background(UCDavisPalette.surface.opacity(0.98))
     }
 
     private func hasUserReacted(with emoji: String) -> Bool {
@@ -313,20 +345,20 @@ struct ReactionBubble: View {
                         if item.count > 1 {
                             Text("\(item.count)")
                                 .font(.system(size: 11, weight: .medium))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(UCDavisPalette.textMuted)
                         }
                     }
                 }
             }
             .padding(.horizontal, 6)
             .padding(.vertical, 3)
-            .background(Color(.systemBackground))
+            .background(UCDavisPalette.surface)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(.systemGray4), lineWidth: 0.5)
+                    .stroke(UCDavisPalette.border.opacity(0.7), lineWidth: 0.5)
             )
-            .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 1)
+            .shadow(color: UCDavisPalette.navy.opacity(0.1), radius: 1, x: 0, y: 1)
         }
     }
 
@@ -366,10 +398,14 @@ struct MessageBubble: View {
                         .padding(.vertical, 10)
                         .background(
                             message.isFromCurrentUser
-                                ? LinearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                : LinearGradient(colors: [Color(.systemGray6), Color(.systemGray6)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                ? LinearGradient(colors: [UCDavisPalette.deepBlue, UCDavisPalette.navy], startPoint: .topLeading, endPoint: .bottomTrailing)
+                                : LinearGradient(
+                                    colors: [UCDavisPalette.surfaceMuted, UCDavisPalette.surfaceMuted],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                         )
-                        .foregroundColor(message.isFromCurrentUser ? .white : .primary)
+                        .foregroundColor(message.isFromCurrentUser ? .white : UCDavisPalette.textPrimary)
                         .cornerRadius(18)
                         .onTapGesture(count: 2) {
                             onReactionTap?()
@@ -394,19 +430,19 @@ struct MessageBubble: View {
                 HStack(spacing: 4) {
                     Text(formatTime(message.createdAt))
                         .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(UCDavisPalette.textMuted)
 
                     if message.isFromCurrentUser {
                         if message.isReadByPartner(currentUserId: currentUserId) {
                             Text("Read")
                                 .font(.system(size: 10, weight: .medium))
                                 .foregroundStyle(
-                                    .linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                                    .linearGradient(colors: [UCDavisPalette.gold, UCDavisPalette.deepBlue], startPoint: .leading, endPoint: .trailing)
                                 )
                         } else {
                             Text("Delivered")
                                 .font(.system(size: 10, weight: .medium))
-                                .foregroundColor(.gray)
+                                .foregroundColor(UCDavisPalette.gold.opacity(0.6))
                         }
                     }
                 }

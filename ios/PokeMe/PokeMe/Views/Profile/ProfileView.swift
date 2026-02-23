@@ -7,63 +7,70 @@ struct ProfileView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Gradient header with profile picture
-                    ZStack {
-                        LinearGradient(
-                            colors: [.orange, .pink, .purple],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+            ZStack {
+                UCDavisBackground()
+
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Gradient header with profile picture
+                        ZStack {
+                            LinearGradient(
+                                colors: [UCDavisPalette.deepBlue, UCDavisPalette.navy, UCDavisPalette.deepBlue],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                            .frame(height: 200)
+
+                            // Wavy bottom edge
+                            VStack {
+                                Spacer()
+                                Wave()
+                                    .fill(UCDavisPalette.surface)
+                                    .frame(height: 40)
+                            }
+
+                            profilePictureSection
+                                .offset(y: 40)
+                        }
                         .frame(height: 200)
 
-                        // Wavy bottom edge
-                        VStack {
-                            Spacer()
-                            Wave()
-                                .fill(Color(.systemBackground))
-                                .frame(height: 40)
-                        }
+                        VStack(spacing: 20) {
+                            userInfoSection
+                                .padding(.top, 50)
 
-                        profilePictureSection
-                            .offset(y: 40)
+                            if let sports = authViewModel.user?.sports, !sports.isEmpty {
+                                sportsSection(sports: sports)
+                            }
+
+                            if let availability = authViewModel.user?.availability, !availability.isEmpty {
+                                availabilitySection(availability: availability)
+                            }
+
+                            if let bio = authViewModel.user?.bio, !bio.isEmpty {
+                                bioSection(bio: bio)
+                            }
+
+                            if let socials = authViewModel.user?.socials {
+                                socialsSection(socials: socials)
+                            }
+
+                            Spacer(minLength: 20)
+                        }
+                        .padding(.horizontal)
                     }
-                    .frame(height: 200)
-
-                    VStack(spacing: 20) {
-                        userInfoSection
-                            .padding(.top, 50)
-
-                        if let sports = authViewModel.user?.sports, !sports.isEmpty {
-                            sportsSection(sports: sports)
-                        }
-
-                        if let availability = authViewModel.user?.availability, !availability.isEmpty {
-                            availabilitySection(availability: availability)
-                        }
-
-                        if let bio = authViewModel.user?.bio, !bio.isEmpty {
-                            bioSection(bio: bio)
-                        }
-
-                        if let socials = authViewModel.user?.socials {
-                            socialsSection(socials: socials)
-                        }
-
-                        Spacer(minLength: 20)
-                    }
-                    .padding(.horizontal)
                 }
+                .foregroundColor(UCDavisPalette.gold)
             }
             .ignoresSafeArea(edges: .top)
             .navigationBarTitleDisplayMode(.inline)
+            .tint(UCDavisPalette.gold)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: { showSettings = true }) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundColor(.orange)
+                            .foregroundColor(UCDavisPalette.gold)
                     }
+                    .accessibilityLabel("Settings")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showEditProfile = true }) {
@@ -73,8 +80,9 @@ struct ProfileView: View {
                         }
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundColor(.orange)
+                        .foregroundColor(UCDavisPalette.gold)
                     }
+                    .accessibilityLabel("Edit profile")
                 }
             }
             .sheet(isPresented: $showEditProfile) {
@@ -91,7 +99,7 @@ struct ProfileView: View {
     private var profilePictureSection: some View {
         ZStack {
             Circle()
-                .fill(Color(.systemBackground))
+                .fill(UCDavisPalette.surface)
                 .frame(width: 130, height: 130)
 
             if let pictureData = authViewModel.user?.profilePicture,
@@ -105,7 +113,7 @@ struct ProfileView: View {
             } else {
                 Circle()
                     .fill(
-                        LinearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        LinearGradient(colors: [UCDavisPalette.deepBlue, UCDavisPalette.navy], startPoint: .topLeading, endPoint: .bottomTrailing)
                     )
                     .frame(width: 120, height: 120)
                     .overlay(
@@ -121,6 +129,7 @@ struct ProfileView: View {
         VStack(spacing: 8) {
             Text(authViewModel.user?.displayName ?? "Unknown")
                 .font(.system(size: 28, weight: .bold, design: .rounded))
+                .foregroundColor(UCDavisPalette.gold)
 
             if let year = authViewModel.user?.collegeYear {
                 Text(year)
@@ -130,7 +139,7 @@ struct ProfileView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 5)
                     .background(
-                        LinearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                        LinearGradient(colors: [UCDavisPalette.deepBlue, UCDavisPalette.navy], startPoint: .leading, endPoint: .trailing)
                     )
                     .cornerRadius(12)
             }
@@ -138,11 +147,11 @@ struct ProfileView: View {
             if let major = authViewModel.user?.major {
                 HStack {
                     Image(systemName: "book.closed.fill")
-                        .foregroundColor(.purple)
+                        .foregroundColor(UCDavisPalette.gold)
                     Text(major)
                 }
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(UCDavisPalette.gold.opacity(0.72))
             }
         }
     }
@@ -152,7 +161,7 @@ struct ProfileView: View {
             Label("Sports", systemImage: "trophy.fill")
                 .font(.headline)
                 .foregroundStyle(
-                    .linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                    .linearGradient(colors: [UCDavisPalette.gold, UCDavisPalette.deepBlue], startPoint: .leading, endPoint: .trailing)
                 )
 
             ForEach(sports) { sport in
@@ -162,6 +171,7 @@ struct ProfileView: View {
                     Text(sport.sport)
                         .font(.body)
                         .fontWeight(.medium)
+                        .foregroundColor(UCDavisPalette.gold)
                     Spacer()
                     Text(sport.skillLevel)
                         .font(.caption)
@@ -178,8 +188,7 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(16)
+        .ucDavisCardSurface()
     }
 
     private func availabilitySection(availability: [String: [String]]) -> some View {
@@ -191,7 +200,7 @@ struct ProfileView: View {
             Label("Availability", systemImage: "calendar")
                 .font(.headline)
                 .foregroundStyle(
-                    .linearGradient(colors: [.green, .teal], startPoint: .leading, endPoint: .trailing)
+                    .linearGradient(colors: [UCDavisPalette.deepBlue, UCDavisPalette.gold], startPoint: .leading, endPoint: .trailing)
                 )
 
             VStack(spacing: 0) {
@@ -203,7 +212,7 @@ struct ProfileView: View {
                             .font(.caption2)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(UCDavisPalette.gold.opacity(0.72))
                     }
                 }
                 .padding(.bottom, 4)
@@ -213,7 +222,7 @@ struct ProfileView: View {
                         Text(slot)
                             .font(.caption)
                             .frame(width: 70, alignment: .leading)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(UCDavisPalette.gold.opacity(0.72))
 
                         ForEach(Array(zip(days, dayAbbrs)), id: \.0) { day, _ in
                             let isAvailable = availability[day]?.contains(slot) ?? false
@@ -221,7 +230,11 @@ struct ProfileView: View {
                                 .fill(
                                     isAvailable
                                         ? LinearGradient(colors: [.green, .mint], startPoint: .top, endPoint: .bottom)
-                                        : LinearGradient(colors: [Color(.systemGray4), Color(.systemGray4)], startPoint: .top, endPoint: .bottom)
+                                        : LinearGradient(
+                                            colors: [UCDavisPalette.surfaceMuted, UCDavisPalette.surfaceMuted],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
                                 )
                                 .frame(height: 28)
                                 .overlay(
@@ -238,8 +251,7 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(16)
+        .ucDavisCardSurface()
     }
 
     private func bioSection(bio: String) -> some View {
@@ -247,15 +259,15 @@ struct ProfileView: View {
             Label("About", systemImage: "quote.bubble.fill")
                 .font(.headline)
                 .foregroundStyle(
-                    .linearGradient(colors: [.purple, .indigo], startPoint: .leading, endPoint: .trailing)
+                    .linearGradient(colors: [UCDavisPalette.deepBlue, UCDavisPalette.gold], startPoint: .leading, endPoint: .trailing)
                 )
             Text(bio)
                 .font(.body)
+                .foregroundColor(UCDavisPalette.gold)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(16)
+        .ucDavisCardSurface()
     }
 
     private func socialsSection(socials: Socials) -> some View {
@@ -263,7 +275,7 @@ struct ProfileView: View {
             Label("Socials", systemImage: "at")
                 .font(.headline)
                 .foregroundStyle(
-                    .linearGradient(colors: [.blue, .cyan], startPoint: .leading, endPoint: .trailing)
+                    .linearGradient(colors: [UCDavisPalette.deepBlue, UCDavisPalette.gold], startPoint: .leading, endPoint: .trailing)
                 )
 
             HStack(spacing: 12) {
@@ -283,8 +295,7 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(16)
+        .ucDavisCardSurface()
     }
 
     private func socialBadge(icon: String, label: String, colors: [Color]) -> some View {
@@ -294,32 +305,12 @@ struct ProfileView: View {
             Text("@\(label)")
                 .font(.caption)
                 .fontWeight(.medium)
+                .foregroundColor(UCDavisPalette.gold)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(colors.first?.opacity(0.1) ?? Color.clear)
         .cornerRadius(20)
-    }
-
-    private func sportEmoji(_ sport: String) -> String {
-        switch sport.lowercased() {
-        case "basketball": return "🏀"
-        case "tennis": return "🎾"
-        case "soccer": return "⚽"
-        case "volleyball": return "🏐"
-        case "badminton": return "🏸"
-        case "running": return "🏃"
-        case "swimming": return "🏊"
-        case "cycling": return "🚴"
-        case "table tennis": return "🏓"
-        case "football": return "🏈"
-        case "baseball": return "⚾"
-        case "golf": return "⛳"
-        case "hiking": return "🥾"
-        case "yoga": return "🧘"
-        case "rock climbing": return "🧗"
-        default: return "🏅"
-        }
     }
 
     private func skillGradient(_ level: String) -> [Color] {

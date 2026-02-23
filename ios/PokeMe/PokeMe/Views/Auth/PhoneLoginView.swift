@@ -7,148 +7,162 @@ struct PhoneLoginView: View {
     @State private var errorMessage: String?
     @State private var showVerification = false
     @State private var normalizedPhone = ""
-    @State private var animateGradient = false
-    @State private var bounceEmoji = false
+    @State private var animateIcons = false
 
-    private let sportEmojis = ["🏀", "⚽", "🎾", "🏐", "🏸", "🏊", "🚴", "🏓"]
+    private let sportEmojis = ["🏀", "⚽", "🎾", "🏐", "🏸"]
+
+    private var canSend: Bool {
+        phoneNumber.filter(\.isNumber).count >= 10 && !isLoading
+    }
 
     var body: some View {
         ZStack {
-            // Animated gradient background
-            LinearGradient(
-                colors: animateGradient
-                    ? [Color.orange, Color.pink, Color.purple]
-                    : [Color.purple, Color.blue, Color.cyan],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true), value: animateGradient)
+            UCDavisBackground(animated: true)
 
-            VStack(spacing: 24) {
-                // Animated sport emojis
-                HStack(spacing: 12) {
-                    ForEach(Array(sportEmojis.prefix(5).enumerated()), id: \.offset) { index, emoji in
-                        Text(emoji)
-                            .font(.system(size: 28))
-                            .offset(y: bounceEmoji ? -8 : 8)
-                            .animation(
-                                .easeInOut(duration: 0.6)
-                                    .repeatForever(autoreverses: true)
-                                    .delay(Double(index) * 0.15),
-                                value: bounceEmoji
-                            )
-                    }
-                }
-                .padding(.top, 50)
+            VStack(spacing: 28) {
+                hero
+                    .padding(.top, 20)
 
-                // Logo/Title
-                VStack(spacing: 8) {
-                    Text("PokeMe")
-                        .font(.system(size: 52, weight: .black, design: .rounded))
-                        .foregroundStyle(
-                            .linearGradient(
-                                colors: [.white, .white.opacity(0.85)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
+                phoneCard
 
-                    Text("Find your sports partner")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white.opacity(0.8))
-                }
+                Spacer(minLength: 14)
 
-                Spacer()
-
-                // Phone Input Card
-                VStack(spacing: 16) {
-                    HStack {
-                        Text("+1")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.orange)
-                            .padding(.leading, 12)
-
-                        TextField("(530) 555-0000", text: $phoneNumber)
-                            .font(.title2)
-                            .keyboardType(.phonePad)
-                            .textContentType(.telephoneNumber)
-                    }
-                    .padding()
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(16)
-
-                    Text("For testing, use: 530-555-0000")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
-
-                    if let error = errorMessage {
-                        Text(error)
-                            .foregroundColor(.yellow)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                    }
-
-                    Button(action: sendCode) {
-                        if isLoading {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        } else {
-                            HStack {
-                                Text("Send Code")
-                                    .fontWeight(.bold)
-                                Image(systemName: "arrow.right.circle.fill")
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(
-                        phoneNumber.count >= 10
-                            ? LinearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
-                            : LinearGradient(colors: [.gray.opacity(0.5), .gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
-                    )
-                    .foregroundColor(.white)
-                    .cornerRadius(16)
-                    .shadow(color: phoneNumber.count >= 10 ? .orange.opacity(0.4) : .clear, radius: 12, x: 0, y: 6)
-                    .disabled(isLoading || phoneNumber.count < 10)
-                    .scaleEffect(phoneNumber.count >= 10 ? 1.0 : 0.97)
-                    .animation(.spring(response: 0.3), value: phoneNumber.count >= 10)
-                }
-                .padding(.horizontal, 28)
-
-                Spacer()
-
-                // Email login option
-                Button(action: { authViewModel.showEmailLogin = true }) {
-                    HStack {
-                        Text("Prefer email?")
-                            .foregroundColor(.white.opacity(0.6))
-                        Text("Login with email")
-                            .foregroundColor(.white)
-                            .fontWeight(.semibold)
-                    }
-                }
-                .padding(.bottom, 32)
+                Text("Phone verification only")
+                    .font(.footnote.weight(.medium))
+                    .foregroundColor(.white.opacity(0.8))
+                    .padding(.bottom, 18)
             }
-        }
-        .onAppear {
-            animateGradient = true
-            bounceEmoji = true
+            .padding(.horizontal, 22)
         }
         .sheet(isPresented: $showVerification) {
             VerifyCodeView(phone: normalizedPhone)
                 .environmentObject(authViewModel)
         }
+        .onAppear {
+            animateIcons = true
+        }
+    }
+
+    private var hero: some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 10) {
+                ForEach(Array(sportEmojis.enumerated()), id: \.offset) { index, emoji in
+                    Text(emoji)
+                        .font(.system(size: 24))
+                        .padding(10)
+                        .background(
+                            Circle()
+                                .fill(UCDavisPalette.surface.opacity(0.5))
+                        )
+                        .offset(y: animateIcons ? (index.isMultiple(of: 2) ? -5 : 5) : 0)
+                        .animation(
+                            .easeInOut(duration: 1.3)
+                                .repeatForever(autoreverses: true)
+                                .delay(Double(index) * 0.08),
+                            value: animateIcons
+                        )
+                }
+            }
+
+            VStack(spacing: 6) {
+                Text("PokeMe")
+                    .font(.system(size: 54, weight: .black, design: .rounded))
+                    .foregroundColor(.white)
+                    .tracking(0.5)
+
+                Text("Find your UC Davis sports partner")
+                    .font(.headline.weight(.semibold))
+                    .foregroundColor(.white.opacity(0.84))
+            }
+        }
+    }
+
+    private var phoneCard: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Get Started")
+                .font(.title3.weight(.bold))
+                .foregroundColor(UCDavisPalette.navy)
+
+            Text("Enter your phone number and we’ll send a one-time code.")
+                .font(.subheadline)
+                .foregroundColor(UCDavisPalette.textMuted)
+
+            HStack(spacing: 12) {
+                Text("+1")
+                    .font(.title3.weight(.bold))
+                    .foregroundColor(UCDavisPalette.textPrimary)
+                    .padding(.leading, 6)
+
+                TextField("(530) 555-0000", text: $phoneNumber)
+                    .font(.title3.weight(.semibold))
+                    .foregroundColor(UCDavisPalette.textPrimary)
+                    .keyboardType(.phonePad)
+                    .textContentType(.telephoneNumber)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 14)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(UCDavisPalette.surfaceMuted.opacity(0.92))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(UCDavisPalette.border.opacity(0.7), lineWidth: 1)
+            )
+
+            Text("For testing: 530-555-0000")
+                .font(.caption.weight(.medium))
+                .foregroundColor(UCDavisPalette.textMuted)
+
+            if let error = errorMessage {
+                Label(error, systemImage: "exclamationmark.circle.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(UCDavisPalette.danger)
+            }
+
+            Button(action: sendCode) {
+                HStack(spacing: 8) {
+                    if isLoading {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Image(systemName: "paperplane.fill")
+                        Text("Send Code")
+                            .fontWeight(.bold)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(
+                            canSend
+                                ? LinearGradient(
+                                    colors: [UCDavisPalette.deepBlue, UCDavisPalette.navy],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                                : LinearGradient(
+                                    colors: [Color.white.opacity(0.18), Color.white.opacity(0.16)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                        )
+                )
+                .foregroundColor(canSend ? .white : UCDavisPalette.textMuted)
+                .shadow(color: canSend ? UCDavisPalette.gold.opacity(0.34) : .clear, radius: 10, x: 0, y: 5)
+            }
+            .disabled(!canSend)
+        }
+        .padding(22)
+        .ucDavisCardSurface(cornerRadius: 24)
     }
 
     private func sendCode() {
         isLoading = true
         errorMessage = nil
 
-        let digits = phoneNumber.filter { $0.isNumber }
+        let digits = phoneNumber.filter(\.isNumber)
         normalizedPhone = "+1" + digits
 
         Task {
