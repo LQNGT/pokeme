@@ -62,3 +62,20 @@ Before showing Ethan the app, I gave him the idea that the app allowed you to fi
 # Eugene (Interviewing Ethan)
 
 For Vin, he plays pickup basketball a lot in the ARC gym so when I mentioned that this could help him find game session he was interested.  When looking through the app, Vin responded positively to the concept and liked the idea of being able to discover sessions publicly as well as connect with other users. He felt that both features worked well together and made the app appealing for people looking to play and meet others. However, he mentioned that for easier use, it would be helpful to have a clearer way to see which sessions he had already joined and which ones had been planned for the future. He felt this would make the experience more organized and convenient. His overall impression was that the idea was strong and useful, but adding better visibility for joined and upcoming sessions would improve the app’s usability even more. He thought the AI compatibility feature needed more work as he wanted to be able to differentiate the strengths of different players in their sports and what made them unique.
+
+# Kelvin (Interviewing Kaden)
+
+For Kaden, he understood right away that the app was meant for meeting sports partners. He said that from the beginning, it was clear the purpose of the app was to help users connect with others to play sports together. This made the concept easy to grasp and aligned well with what he would personally use it for.
+
+When first navigating the app, he found it user-friendly overall, but mentioned that he was initially confused about what the “poke” feature meant at first glance. After exploring more, the layout and flow made sense to him, and he felt comfortable moving through the different sections without much difficulty.
+
+During the task, Kaden clicked on Meetups, selected Basketball, and joined a pickup game at the ARC. He then explored the compatibility feature by clicking “poke,” skipping users with low compatibility, poking Alex for tennis, and skipping to the next person afterward. He felt the process was smooth and straightforward, and he liked being able to quickly move through potential matches.
+
+In his feedback, he mentioned that he did not like how the app did not require him to fully fill out his profile, as he felt that a more complete profile would make compatibility more meaningful. However, he did like the compatibility feature overall because it gave him a quick, general sense of how well he might match with someone at a fast first glance.
+
+For improvements, he suggested making the “skip” option more prominent and placing the Discover tab first for easier access. He also recommended that after poking someone, users should automatically move to the next profile without having to manually skip. He described the app as a streamlined way of finding sports partners and said it makes it easy to see who fits with his schedule. He rated the difficulty of using the app a 2 out of 5, indicating that it was simple and easy to navigate.
+
+# Kelvin (Interviewing Richmond)
+For Richmond, he enjoys playing sports recreationally and has used similar apps before to connect with others, so when I introduced this app to him, he was immediately interested. When looking through the app, Richmond responded positively to the overall design and felt it was very engaging. He mentioned that it felt similar to other apps he has used like Tinder, which made it easy for him to understand and navigate without confusion. He especially liked how simple it was to find people to play games with and appreciated that the interface felt user-friendly and intuitive.
+
+Regarding the AI compatibility feature, Richmond thought it was quick and easy to use. He liked that it did not take too much time, allowing him to focus more on actually finding people to play with rather than spending too long setting up his profile. He felt this feature added value by helping match users efficiently. For the debrief, Richmond said difficulty using the app was about a 2 and that one thing he wished changed was making the user's fill in their profile details first.
