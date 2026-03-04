@@ -2,7 +2,8 @@ import SwiftUI
 
 struct PhoneLoginView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @State private var phoneNumber = ""
+    @State private var rawDigits = ""
+    @State private var formattedPhone = ""
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var showVerification = false
@@ -11,6 +12,19 @@ struct PhoneLoginView: View {
     @State private var bounceEmoji = false
 
     private let sportEmojis = ["🏀", "⚽", "🎾", "🏐", "🏸", "🏊", "🚴", "🏓"]
+
+    private func formatPhoneNumber(_ digits: String) -> String {
+        guard !digits.isEmpty else { return "" }
+        var result = "("
+        let count = digits.count
+        result += String(digits.prefix(3))
+        if count >= 3 { result += ") " }
+        if count > 3 { result += String(digits.dropFirst(3).prefix(3)) }
+        if count >= 6 { result += "-" }
+        if count > 6 { result += String(digits.dropFirst(6)) }
+        return result
+    }
+
 
     var body: some View {
         ZStack {
@@ -71,10 +85,20 @@ struct PhoneLoginView: View {
                             .foregroundColor(.orange)
                             .padding(.leading, 12)
 
-                        TextField("(530) 555-0000", text: $phoneNumber)
+                        TextField("(530) 555-0000", text: $formattedPhone)
                             .font(.title2)
                             .keyboardType(.phonePad)
                             .textContentType(.telephoneNumber)
+                            .onChange(of: formattedPhone) { newValue in
+                                let currentFormatted = formatPhoneNumber(rawDigits)
+                                if newValue.count < currentFormatted.count {
+                                    if !rawDigits.isEmpty { rawDigits = String(rawDigits.dropLast()) }
+                                } else {
+                                    rawDigits = String(newValue.filter { $0.isNumber }.prefix(10))
+                                }
+                                let corrected = formatPhoneNumber(rawDigits)
+                                if formattedPhone != corrected { formattedPhone = corrected }
+                            }
                     }
                     .padding()
                     .background(.ultraThinMaterial)
@@ -106,16 +130,16 @@ struct PhoneLoginView: View {
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(
-                        phoneNumber.count >= 10
+                        rawDigits.count >= 10
                             ? LinearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
                             : LinearGradient(colors: [.gray.opacity(0.5), .gray.opacity(0.5)], startPoint: .leading, endPoint: .trailing)
                     )
                     .foregroundColor(.white)
                     .cornerRadius(16)
-                    .shadow(color: phoneNumber.count >= 10 ? .orange.opacity(0.4) : .clear, radius: 12, x: 0, y: 6)
-                    .disabled(isLoading || phoneNumber.count < 10)
-                    .scaleEffect(phoneNumber.count >= 10 ? 1.0 : 0.97)
-                    .animation(.spring(response: 0.3), value: phoneNumber.count >= 10)
+                    .shadow(color: rawDigits.count >= 10 ? .orange.opacity(0.4) : .clear, radius: 12, x: 0, y: 6)
+                    .disabled(isLoading || rawDigits.count < 10)
+                    .scaleEffect(rawDigits.count >= 10 ? 1.0 : 0.97)
+                    .animation(.spring(response: 0.3), value: rawDigits.count >= 10)
                 }
                 .padding(.horizontal, 28)
 
@@ -148,8 +172,7 @@ struct PhoneLoginView: View {
         isLoading = true
         errorMessage = nil
 
-        let digits = phoneNumber.filter { $0.isNumber }
-        normalizedPhone = "+1" + digits
+        normalizedPhone = "+1" + rawDigits
 
         Task {
             do {
