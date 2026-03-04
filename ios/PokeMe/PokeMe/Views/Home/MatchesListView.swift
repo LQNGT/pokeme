@@ -13,6 +13,8 @@ struct MatchesListView: View {
     @State private var selectedGroupChat: Meetup?
     @State private var selectedProfileMatch: Match?
     @State private var selectedGroupMembers: Meetup?
+    @State private var matchPendingDelete: Match?
+    @State private var meetupPendingLeave: Meetup?
     @State private var animateEmpty = false
     @AppStorage("matchesSelectedFilter") private var selectedFilterRaw: String = MatchFilter.all.rawValue
 
@@ -68,7 +70,7 @@ struct MatchesListView: View {
                                         }
                                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                             Button(role: .destructive) {
-                                                Task { await viewModel.leaveMeetup(token: authViewModel.getToken(), meetupId: meetup.id) }
+                                                meetupPendingLeave = meetup
                                             } label: {
                                                 Label(meetup.hostId == currentUserId ? "Delete" : "Leave", systemImage: "rectangle.portrait.and.arrow.right")
                                             }
@@ -86,7 +88,7 @@ struct MatchesListView: View {
                                                 Label("View Members", systemImage: "person.3")
                                             }
                                             Button(role: .destructive) {
-                                                Task { await viewModel.leaveMeetup(token: authViewModel.getToken(), meetupId: meetup.id) }
+                                                meetupPendingLeave = meetup
                                             } label: {
                                                 Label(meetup.hostId == currentUserId ? "Delete Group" : "Leave Group", systemImage: "rectangle.portrait.and.arrow.right")
                                             }
@@ -108,7 +110,7 @@ struct MatchesListView: View {
                                         }
                                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                             Button(role: .destructive) {
-                                                Task { await viewModel.deleteMatch(token: authViewModel.getToken(), matchId: match.id) }
+                                                matchPendingDelete = match
                                             } label: {
                                                 Label("Delete", systemImage: "trash")
                                             }
@@ -126,7 +128,7 @@ struct MatchesListView: View {
                                                 Label("View Profile", systemImage: "person.circle")
                                             }
                                             Button(role: .destructive) {
-                                                Task { await viewModel.deleteMatch(token: authViewModel.getToken(), matchId: match.id) }
+                                                matchPendingDelete = match
                                             } label: {
                                                 Label("Delete", systemImage: "trash")
                                             }
@@ -177,6 +179,42 @@ struct MatchesListView: View {
             .sheet(item: $selectedGroupMembers) { meetup in
                 GroupMembersSheet(meetup: meetup)
                     .environmentObject(authViewModel)
+            }
+            .alert("Delete Match?", isPresented: Binding(
+                get: { matchPendingDelete != nil },
+                set: { if !$0 { matchPendingDelete = nil } }
+            )) {
+                Button("Delete", role: .destructive) {
+                    if let match = matchPendingDelete {
+                        Task { await viewModel.deleteMatch(token: authViewModel.getToken(), matchId: match.id) }
+                    }
+                    matchPendingDelete = nil
+                }
+                Button("Cancel", role: .cancel) { matchPendingDelete = nil }
+            } message: {
+                if let match = matchPendingDelete {
+                    Text("Remove your match with \(match.partnerName)? This can't be undone.")
+                }
+            }
+            .alert(
+                meetupPendingLeave.map { $0.hostId == currentUserId ? "Delete Group?" : "Leave Group?" } ?? "Leave Group?",
+                isPresented: Binding(
+                    get: { meetupPendingLeave != nil },
+                    set: { if !$0 { meetupPendingLeave = nil } }
+                )
+            ) {
+                Button(meetupPendingLeave.map { $0.hostId == currentUserId ? "Delete" : "Leave" } ?? "Leave", role: .destructive) {
+                    if let meetup = meetupPendingLeave {
+                        Task { await viewModel.leaveMeetup(token: authViewModel.getToken(), meetupId: meetup.id) }
+                    }
+                    meetupPendingLeave = nil
+                }
+                Button("Cancel", role: .cancel) { meetupPendingLeave = nil }
+            } message: {
+                if let meetup = meetupPendingLeave {
+                    let action = meetup.hostId == currentUserId ? "Deleting" : "Leaving"
+                    Text("\(action) \"\(meetup.title)\" is permanent and can't be undone.")
+                }
             }
         }
     }
