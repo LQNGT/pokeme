@@ -10,6 +10,8 @@ struct MeetupCardView: View {
     private var isHost: Bool { meetup.hostId == currentUserId }
     private var isJoined: Bool { meetup.participants?.contains(currentUserId) ?? false }
 
+    @State private var showCancelConfirm = false
+
     private var sportIcon: String {
         switch meetup.sport.lowercased() {
         case "basketball": return "basketball"
@@ -99,11 +101,17 @@ struct MeetupCardView: View {
             HStack {
                 Spacer()
                 if isHost {
-                    Button(action: onCancel) {
+                    Button(action: { showCancelConfirm = true }) {
                         Text("Cancel Meetup")
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundColor(.red)
+                    }
+                    .alert("Cancel Meetup", isPresented: $showCancelConfirm) {
+                        Button("Yes, Cancel", role: .destructive) { onCancel() }
+                        Button("No", role: .cancel) {}
+                    } message: {
+                        Text("Are you sure you want to cancel this meetup?")
                     }
                 } else if isJoined {
                     Button(action: onLeave) {

@@ -10,6 +10,7 @@ struct MeetupDetailView: View {
     @State private var isLoadingParticipants = false
     @State private var selectedParticipant: User?
     @State private var showGroupChat = false
+    @State private var showCancelConfirm = false
     private var currentUserId: String { authViewModel.user?.id ?? "" }
     private var isHost: Bool { meetup.hostId == currentUserId }
     private var isJoined: Bool { meetup.participants?.contains(currentUserId) ?? false }
@@ -167,12 +168,7 @@ struct MeetupDetailView: View {
                 HStack {
                     Spacer()
                     if isHost {
-                        Button(action: {
-                            Task {
-                                await viewModel.cancelMeetup(token: authViewModel.getToken(), meetupId: meetup.id)
-                                dismiss()
-                            }
-                        }) {
+                        Button(action: { showCancelConfirm = true }) {
                             Text("Cancel Meetup")
                                 .font(.headline)
                                 .foregroundColor(.white)
@@ -180,6 +176,17 @@ struct MeetupDetailView: View {
                                 .padding(.vertical, 12)
                                 .background(Color.red)
                                 .cornerRadius(20)
+                        }
+                        .alert("Cancel Meetup", isPresented: $showCancelConfirm) {
+                            Button("Yes, Cancel", role: .destructive) {
+                                Task {
+                                    await viewModel.cancelMeetup(token: authViewModel.getToken(), meetupId: meetup.id)
+                                    dismiss()
+                                }
+                            }
+                            Button("No", role: .cancel) {}
+                        } message: {
+                            Text("Are you sure you want to cancel this meetup?")
                         }
                     } else if isJoined {
                         Button(action: {
