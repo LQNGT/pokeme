@@ -179,6 +179,7 @@ struct MeetupsListView: View {
                     }
                 }
                 .navigationTitle("Meetups")
+                .navigationBarTitleDisplayMode(.large)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: { showSportPicker = true }) {

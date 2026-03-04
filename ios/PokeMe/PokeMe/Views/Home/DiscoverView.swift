@@ -4,6 +4,10 @@ struct DiscoverView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @StateObject private var viewModel = DiscoverViewModel()
 
+    @State private var pullOffset: CGFloat = 0
+    @State private var isRefreshing = false
+    private let refreshThreshold: CGFloat = 60
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -31,16 +35,29 @@ struct DiscoverView: View {
                 .padding(.vertical, 8)
 
                 ZStack(alignment: .top) {
-                    stateContent
+                    // Refresh indicator revealed as content shifts down
+                    refreshIndicatorView
+                        .frame(height: 48)
+                        .frame(maxWidth: .infinity)
 
-                    if viewModel.newProfilesAvailable {
-                        newPeoplePill
+                    // Content + new-people pill, shifted down during pull
+                    ZStack(alignment: .top) {
+                        stateContent
+
+                        if viewModel.newProfilesAvailable {
+                            newPeoplePill
+                        }
                     }
+                    .animation(.spring(response: 0.4), value: viewModel.newProfilesAvailable)
+                    .offset(y: pullOffset)
+
+                    // Invisible pull-gesture capture zone at the very top
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 24)
+                        .contentShape(Rectangle())
+                        .highPriorityGesture(pullGesture)
                 }
-                .animation(.spring(response: 0.4), value: viewModel.newProfilesAvailable)
-            }
-            .refreshable {
-                await viewModel.fetchProfiles(token: authViewModel.getToken(), currentUser: authViewModel.user)
             }
             .navigationTitle("Discover")
             .task {
@@ -67,6 +84,55 @@ struct DiscoverView: View {
         }
     }
 
+    // MARK: - Pull-to-Refresh
+
+    private var pullGesture: some Gesture {
+        DragGesture(minimumDistance: 8)
+            .onChanged { value in
+                guard !isRefreshing, value.translation.height > 0 else { return }
+                pullOffset = min(value.translation.height * 0.55, refreshThreshold * 1.3)
+            }
+            .onEnded { _ in
+                if pullOffset >= refreshThreshold {
+                    triggerRefresh()
+                } else {
+                    withAnimation(.spring(response: 0.4)) { pullOffset = 0 }
+                }
+            }
+    }
+
+    private func triggerRefresh() {
+        isRefreshing = true
+        withAnimation(.spring(response: 0.3)) { pullOffset = 48 }
+        Task {
+            await viewModel.fetchProfiles(token: authViewModel.getToken(), currentUser: authViewModel.user)
+            withAnimation(.spring(response: 0.4)) {
+                pullOffset = 0
+                isRefreshing = false
+            }
+        }
+    }
+
+    private var refreshIndicatorView: some View {
+        ZStack {
+            if isRefreshing {
+                ProgressView()
+                    .tint(.orange)
+            } else {
+                Image(systemName: "arrow.down")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.secondary)
+                    .rotationEffect(.degrees(pullOffset >= refreshThreshold ? 180 : 0))
+                    .animation(.spring(response: 0.3), value: pullOffset >= refreshThreshold)
+                    .opacity(pullOffset > 8 ? 1 : 0)
+            }
+        }
+        .opacity(isRefreshing ? 1 : min(Double(pullOffset) / 20.0, 1.0))
+        .frame(maxHeight: .infinity, alignment: .center)
+    }
+
+    // MARK: - New People Pill
+
     private var newPeoplePill: some View {
         Button(action: {
             withAnimation(.spring(response: 0.35)) {
@@ -92,6 +158,8 @@ struct DiscoverView: View {
         .padding(.top, 8)
         .transition(.move(edge: .top).combined(with: .opacity))
     }
+
+    // MARK: - State Content
 
     @ViewBuilder
     private var stateContent: some View {
@@ -159,7 +227,6 @@ struct DiscoverView: View {
                 .fontWeight(.bold)
             Text("Check back later for new players!")
                 .foregroundColor(.secondary)
-            // Primary CTA
             Button(action: {
                 Task { await viewModel.fetchProfiles(token: authViewModel.getToken(), currentUser: authViewModel.user) }
             }) {
@@ -174,7 +241,6 @@ struct DiscoverView: View {
                 .cornerRadius(25)
                 .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
             }
-            // Secondary CTA
             Button(action: {
                 NotificationCenter.default.post(name: NSNotification.Name("SwitchToProfile"), object: nil)
             }) {
