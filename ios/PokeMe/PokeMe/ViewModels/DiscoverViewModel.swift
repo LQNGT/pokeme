@@ -33,6 +33,11 @@ class DiscoverViewModel: ObservableObject {
         UserDefaults.standard.set(data, forKey: cacheKey)
     }
 
+    func removeProfile(id: String) {
+        profiles.removeAll { $0.id == id }
+        saveToCache()
+    }
+
     func applyPendingProfiles() {
         profiles = pendingProfiles
         pendingProfiles = []

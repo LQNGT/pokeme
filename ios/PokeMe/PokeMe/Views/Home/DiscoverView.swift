@@ -269,7 +269,12 @@ struct DiscoverView: View {
                         onPoke: {
                             Task { await viewModel.pokeProfile(token: authViewModel.getToken(), user: profile) }
                         },
-                        onSkip: {}
+                        onSkip: {},
+                        onRemove: {
+                            withAnimation(.spring(response: 0.35)) {
+                                viewModel.removeProfile(id: profile.id)
+                            }
+                        }
                     )
                 }
             }

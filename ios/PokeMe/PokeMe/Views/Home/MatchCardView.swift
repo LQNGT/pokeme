@@ -5,6 +5,7 @@ struct DiscoverCardView: View {
     let isPoked: Bool
     let onPoke: () -> Void
     let onSkip: () -> Void
+    let onRemove: () -> Void
 
     @State private var appeared = false
     @State private var showBio = false
@@ -72,15 +73,25 @@ struct DiscoverCardView: View {
                 .padding(14)
             }
             .frame(height: 240)
-            // ── Action menu button (top-right) ──
+            // ── Top-right buttons ──
             .overlay(alignment: .topTrailing) {
-                Button(action: { showActions = true }) {
-                    Image(systemName: "ellipsis")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white)
-                        .padding(10)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Circle())
+                HStack(spacing: 8) {
+                    Button(action: { showActions = true }) {
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(9)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Circle())
+                    }
+                    Button(action: onRemove) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 13, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(9)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Circle())
+                    }
                 }
                 .padding(12)
             }
