@@ -2,10 +2,11 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var pokesViewModel = PokesViewModel()
     @StateObject private var matchViewModel = MatchViewModel()
     @StateObject private var messageNotificationPoller = MessageNotificationPoller()
-    @State private var selectedTab = 3  // default to Matches
+    @State private var selectedTab = 0  // default to Meetups
     @State private var dragOffset: CGFloat = 0
     @State private var dragCommitted = false
 
@@ -84,6 +85,20 @@ struct HomeView: View {
         .onDisappear {
             matchViewModel.stopPolling()
             messageNotificationPoller.stopPolling()
+        }
+        .onChange(of: selectedTab) { _, newTab in
+            if newTab == 0 {
+                NotificationCenter.default.post(name: NSNotification.Name("RefreshMeetups"), object: nil)
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                // Restart pollers after app returns from background
+                matchViewModel.startPolling(token: authViewModel.getToken())
+            } else if phase == .background {
+                matchViewModel.stopPolling()
+                messageNotificationPoller.stopPolling()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToDiscover"))) { _ in
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { selectedTab = 1 }

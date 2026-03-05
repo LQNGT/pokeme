@@ -9,8 +9,13 @@ class MeetupViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var sportFilter: String?
 
-    private var previousCounts: [String: Int] = [:]
     private var pollTimer: Timer?
+
+    // Persisted across app restarts so we don't miss joins that happened while the app was dead
+    private var previousCounts: [String: Int] {
+        get { (UserDefaults.standard.dictionary(forKey: "meetupParticipantCounts") as? [String: Int]) ?? [:] }
+        set { UserDefaults.standard.set(newValue, forKey: "meetupParticipantCounts") }
+    }
 
     func fetchMeetups(token: String?, currentUserId: String? = nil) async {
         guard let token = token else { return }
@@ -20,10 +25,11 @@ class MeetupViewModel: ObservableObject {
             let response = try await MeetupService.shared.getMeetups(token: token, sport: sportFilter)
 
             // Detect new participants joining meetups the current user is in
-            if let userId = currentUserId {
+            if let userId = currentUserId, UserDefaults.standard.bool(forKey: "notificationsEnabled") {
+                var counts = previousCounts
                 for meetup in response.meetups {
                     if meetup.participants?.contains(userId) == true {
-                        let oldCount = previousCounts[meetup.id] ?? meetup.participantCount
+                        let oldCount = counts[meetup.id] ?? meetup.participantCount
                         if meetup.participantCount > oldCount {
                             NotificationManager.shared.notify(
                                 title: "New player joined!",
@@ -32,8 +38,9 @@ class MeetupViewModel: ObservableObject {
                             )
                         }
                     }
-                    previousCounts[meetup.id] = meetup.participantCount
+                    counts[meetup.id] = meetup.participantCount
                 }
+                previousCounts = counts
             }
 
             meetups = response.meetups
@@ -47,7 +54,7 @@ class MeetupViewModel: ObservableObject {
 
     func startPolling(token: String?, currentUserId: String?) {
         stopPolling()
-        let timer = Timer(timeInterval: 30.0, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: 20.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 await self?.fetchMeetups(token: token, currentUserId: currentUserId)
             }
@@ -90,8 +97,10 @@ class MeetupViewModel: ObservableObject {
             let response = try await MeetupService.shared.joinMeetup(token: token, meetupId: meetupId)
             if let index = meetups.firstIndex(where: { $0.id == meetupId }) {
                 meetups[index] = response.meetup
-                // Update previousCounts immediately so we don't self-notify on the next poll
-                previousCounts[meetupId] = response.meetup.participantCount
+                // Persist immediately so we don't self-notify on the next poll
+                var counts = previousCounts
+                counts[meetupId] = response.meetup.participantCount
+                previousCounts = counts
             }
         } catch {
             errorMessage = "Failed to join meetup"

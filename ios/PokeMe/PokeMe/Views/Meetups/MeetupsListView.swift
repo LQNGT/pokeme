@@ -8,6 +8,7 @@ private enum MeetupQuickFilter: String, CaseIterable {
 
 struct MeetupsListView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = MeetupViewModel()
     @State private var showCreateSheet = false
     @State private var selectedMeetup: Meetup?
@@ -204,6 +205,16 @@ struct MeetupsListView: View {
                     viewModel.startPolling(token: authViewModel.getToken(), currentUserId: authViewModel.user?.id)
                 }
                 .onDisappear { viewModel.stopPolling() }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .active {
+                        viewModel.startPolling(token: authViewModel.getToken(), currentUserId: authViewModel.user?.id)
+                    } else if phase == .background {
+                        viewModel.stopPolling()
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("RefreshMeetups"))) { _ in
+                    Task { await viewModel.fetchMeetups(token: authViewModel.getToken(), currentUserId: authViewModel.user?.id) }
+                }
                 .refreshable {
                     await viewModel.fetchMeetups(token: authViewModel.getToken(), currentUserId: authViewModel.user?.id)
                 }
