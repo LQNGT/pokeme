@@ -5,9 +5,8 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var pokesViewModel = PokesViewModel()
     @StateObject private var matchViewModel = MatchViewModel()
-@State private var selectedTab = 0  // default to Meetups
+    @State private var selectedTab = 0  // default to Meetups
     @State private var dragOffset: CGFloat = 0
-    @State private var dragCommitted = false
 
     private var unreadMatchCount: Int {
         let userId = authViewModel.user?.id ?? ""
@@ -20,6 +19,8 @@ struct HomeView: View {
         VStack(spacing: 0) {
             GeometryReader { geo in
                 let w = geo.size.width
+                let h = geo.size.height
+
                 HStack(spacing: 0) {
                     MeetupsListView()
                         .environmentObject(authViewModel)
@@ -39,38 +40,51 @@ struct HomeView: View {
                 }
                 .frame(maxHeight: .infinity, alignment: .top)
                 .offset(x: -CGFloat(selectedTab) * w + dragOffset)
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 10)
-                        .onChanged { value in
-                            let dx = value.translation.width
-                            let dy = value.translation.height
-                            // Commit to horizontal direction only
-                            if !dragCommitted {
-                                guard abs(dx) > abs(dy) * 1.5, abs(dx) > 12 else { return }
-                                dragCommitted = true
+
+                // Left edge strip — absolutely positioned so it always sits at the
+                // real screen left edge regardless of HStack width.
+                Color.clear
+                    .frame(width: 20, height: h)
+                    .contentShape(Rectangle())
+                    .position(x: 10, y: h / 2)
+                    .gesture(
+                        DragGesture(minimumDistance: 10)
+                            .onChanged { value in
+                                let dx = value.translation.width
+                                let dy = value.translation.height
+                                guard abs(dx) > abs(dy) * 1.2 else { return }
+                                dragOffset = selectedTab == 0 ? dx * 0.3 : dx
                             }
-                            // Rubber-band at the edges
-                            if selectedTab == 0 && dx > 0 {
-                                dragOffset = dx * 0.3
-                            } else if selectedTab == 4 && dx < 0 {
-                                dragOffset = dx * 0.3
-                            } else {
-                                dragOffset = dx
-                            }
-                        }
-                        .onEnded { value in
-                            dragCommitted = false
-                            let predicted = value.predictedEndTranslation.width
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                                if predicted < -w * 0.3 {
-                                    selectedTab = min(selectedTab + 1, 4)
-                                } else if predicted > w * 0.3 {
-                                    selectedTab = max(selectedTab - 1, 0)
+                            .onEnded { value in
+                                let predicted = value.predictedEndTranslation.width
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    if predicted > w * 0.3 { selectedTab = max(selectedTab - 1, 0) }
+                                    dragOffset = 0
                                 }
-                                dragOffset = 0
                             }
-                        }
-                )
+                    )
+
+                // Right edge strip — positioned at the real screen right edge.
+                Color.clear
+                    .frame(width: 20, height: h)
+                    .contentShape(Rectangle())
+                    .position(x: w - 10, y: h / 2)
+                    .gesture(
+                        DragGesture(minimumDistance: 10)
+                            .onChanged { value in
+                                let dx = value.translation.width
+                                let dy = value.translation.height
+                                guard abs(dx) > abs(dy) * 1.2 else { return }
+                                dragOffset = selectedTab == 4 ? dx * 0.3 : dx
+                            }
+                            .onEnded { value in
+                                let predicted = value.predictedEndTranslation.width
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    if predicted < -w * 0.3 { selectedTab = min(selectedTab + 1, 4) }
+                                    dragOffset = 0
+                                }
+                            }
+                    )
             }
 
             tabBar

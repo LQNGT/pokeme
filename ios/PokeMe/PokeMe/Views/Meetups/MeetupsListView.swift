@@ -184,11 +184,22 @@ struct MeetupsListView: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: { showSportPicker = true }) {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .foregroundColor(.orange)
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 14, weight: .semibold))
+                                Text("Sports")
+                                    .font(.body)
+                            }
+                            .foregroundColor(.orange)
                         }
                     }
-                    ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            Task { await viewModel.fetchMeetups(token: authViewModel.getToken(), currentUserId: authViewModel.user?.id) }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .foregroundColor(.orange)
+                        }
                         Button(action: { showCreateSheet = true }) {
                             Image(systemName: "plus.circle.fill")
                                 .foregroundStyle(
