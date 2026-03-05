@@ -6,8 +6,9 @@ struct HomeView: View {
     @StateObject private var matchViewModel = MatchViewModel()
     @StateObject private var messageNotificationPoller = MessageNotificationPoller()
     @State private var selectedTab = 3  // default to Matches
+    @State private var dragOffset: CGFloat = 0
+    @State private var dragCommitted = false
 
-    /// Matches where partner sent the last message — proxy for unread chats
     private var unreadMatchCount: Int {
         let userId = authViewModel.user?.id ?? ""
         return matchViewModel.matches.filter {
@@ -16,66 +17,64 @@ struct HomeView: View {
     }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            MeetupsListView()
-                .environmentObject(authViewModel)
-                .tabItem {
-                    Image(systemName: selectedTab == 0 ? "person.3.fill" : "person.3")
-                    Text("Meetups")
+        VStack(spacing: 0) {
+            GeometryReader { geo in
+                let w = geo.size.width
+                HStack(spacing: 0) {
+                    MeetupsListView()
+                        .environmentObject(authViewModel)
+                        .frame(width: w)
+                    DiscoverView()
+                        .environmentObject(authViewModel)
+                        .frame(width: w)
+                    IncomingPokesView(viewModel: pokesViewModel)
+                        .environmentObject(authViewModel)
+                        .frame(width: w)
+                    MatchesListView()
+                        .environmentObject(authViewModel)
+                        .frame(width: w)
+                    ProfileView()
+                        .environmentObject(authViewModel)
+                        .frame(width: w)
                 }
-                .tag(0)
+                .frame(maxHeight: .infinity, alignment: .top)
+                .offset(x: -CGFloat(selectedTab) * w + dragOffset)
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 10)
+                        .onChanged { value in
+                            let dx = value.translation.width
+                            let dy = value.translation.height
+                            // Commit to horizontal direction only
+                            if !dragCommitted {
+                                guard abs(dx) > abs(dy) * 1.5, abs(dx) > 12 else { return }
+                                dragCommitted = true
+                            }
+                            // Rubber-band at the edges
+                            if selectedTab == 0 && dx > 0 {
+                                dragOffset = dx * 0.3
+                            } else if selectedTab == 4 && dx < 0 {
+                                dragOffset = dx * 0.3
+                            } else {
+                                dragOffset = dx
+                            }
+                        }
+                        .onEnded { value in
+                            dragCommitted = false
+                            let predicted = value.predictedEndTranslation.width
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                if predicted < -w * 0.3 {
+                                    selectedTab = min(selectedTab + 1, 4)
+                                } else if predicted > w * 0.3 {
+                                    selectedTab = max(selectedTab - 1, 0)
+                                }
+                                dragOffset = 0
+                            }
+                        }
+                )
+            }
 
-            DiscoverView()
-                .environmentObject(authViewModel)
-                .tabItem {
-                    Image(systemName: selectedTab == 1 ? "sportscourt.fill" : "sportscourt")
-                    Text("Discover")
-                }
-                .tag(1)
-
-            IncomingPokesView(viewModel: pokesViewModel)
-                .environmentObject(authViewModel)
-                .tabItem {
-                    Image(systemName: selectedTab == 2 ? "hand.point.right.fill" : "hand.point.right")
-                    Text("Pokes")
-                }
-                .tag(2)
-                .badge(pokesViewModel.pokeCount)
-
-            MatchesListView()
-                .environmentObject(authViewModel)
-                .tabItem {
-                    Image(systemName: selectedTab == 3 ? "message.fill" : "message")
-                    Text("Matches")
-                }
-                .tag(3)
-                .badge(unreadMatchCount > 0 ? unreadMatchCount : 0)
-
-            ProfileView()
-                .environmentObject(authViewModel)
-                .tabItem {
-                    Image(systemName: selectedTab == 4 ? "person.fill" : "person")
-                    Text("Profile")
-                }
-                .tag(4)
+            tabBar
         }
-        .tint(.orange)
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 50)
-                .onEnded { value in
-                    let screenWidth = UIScreen.main.bounds.width
-                    let edgeZone: CGFloat = 30
-                    let startX = value.startLocation.x
-                    guard startX < edgeZone || startX > screenWidth - edgeZone else { return }
-                    let h = value.translation.width
-                    let v = value.translation.height
-                    guard abs(h) > abs(v) * 1.5 else { return }
-                    withAnimation {
-                        if h < 0 { selectedTab = min(selectedTab + 1, 4) }
-                        else      { selectedTab = max(selectedTab - 1, 0) }
-                    }
-                }
-        )
         .task {
             await matchViewModel.fetchMatches(token: authViewModel.getToken())
         }
@@ -86,13 +85,61 @@ struct HomeView: View {
             matchViewModel.stopPolling()
             messageNotificationPoller.stopPolling()
         }
-        // Handle tab-switch notifications from empty state CTAs
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToDiscover"))) { _ in
-            selectedTab = 1
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { selectedTab = 1 }
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SwitchToProfile"))) { _ in
-            selectedTab = 4
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { selectedTab = 4 }
         }
+    }
+
+    private var tabBar: some View {
+        HStack(spacing: 0) {
+            tabBarItem(0, icon: "person.3",        activeIcon: "person.3.fill",        label: "Meetups")
+            tabBarItem(1, icon: "sportscourt",      activeIcon: "sportscourt.fill",     label: "Discover")
+            tabBarItem(2, icon: "hand.point.right", activeIcon: "hand.point.right.fill",label: "Pokes",
+                       badge: pokesViewModel.pokeCount > 0 ? pokesViewModel.pokeCount : nil)
+            tabBarItem(3, icon: "message",          activeIcon: "message.fill",         label: "Matches",
+                       badge: unreadMatchCount > 0 ? unreadMatchCount : nil)
+            tabBarItem(4, icon: "person",           activeIcon: "person.fill",          label: "Profile")
+        }
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+        .background(.bar)
+        .overlay(Divider(), alignment: .top)
+    }
+
+    @ViewBuilder
+    private func tabBarItem(_ index: Int, icon: String, activeIcon: String, label: String, badge: Int? = nil) -> some View {
+        Button {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                selectedTab = index
+                dragOffset = 0
+            }
+        } label: {
+            VStack(spacing: 3) {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: selectedTab == index ? activeIcon : icon)
+                        .font(.system(size: 22))
+                        .frame(width: 28, height: 28)
+                    if let badge {
+                        Text(badge > 99 ? "99+" : "\(badge)")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(.red, in: Capsule())
+                            .offset(x: 10, y: -6)
+                    }
+                }
+                Text(label)
+                    .font(.system(size: 10))
+            }
+            .foregroundStyle(selectedTab == index ? .orange : Color(.systemGray))
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
+        .padding(.bottom, 8)
     }
 }
 
