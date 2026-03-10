@@ -10,6 +10,15 @@ from auth import get_user_by_id
 meetup_bp = Blueprint('meetup', __name__)
 
 
+def is_expired(entity):
+    """Return True if the meetup date is before today (expired 1 day after scheduled date)."""
+    date_str = entity.get('date', '')
+    if not date_str:
+        return False
+    today = datetime.utcnow().date().isoformat()  # 'yyyy-MM-dd'
+    return date_str < today
+
+
 def error_response(code, message, status=400):
     return jsonify({
         'success': False,
@@ -76,6 +85,8 @@ def list_meetups():
 
     meetups = []
     for entity in query.fetch():
+        if is_expired(entity):
+            continue
         if sport_filter and entity.get('sport', '').lower() != sport_filter.lower():
             continue
         if date_filter and entity.get('date') != date_filter:
@@ -98,10 +109,11 @@ def my_meetups():
     client = get_client()
 
     query = client.query(kind='Meetup')
-    query.add_filter('status', '=', 'active')
 
     meetups = []
     for entity in query.fetch():
+        if entity.get('status') == 'cancelled':
+            continue
         participants = entity.get('participants', [])
         if user_id in participants or entity.get('hostId') == user_id:
             meetups.append(meetup_to_dict(entity))
@@ -126,6 +138,9 @@ def join_meetup(meetup_id):
 
     if not meetup or meetup.get('status') != 'active':
         return error_response('MEETUP_NOT_FOUND', 'Meetup not found', 404)
+
+    if is_expired(meetup):
+        return error_response('MEETUP_EXPIRED', 'This meetup has already passed', 410)
 
     participants = meetup.get('participants', [])
     if user_id in participants:
@@ -208,7 +223,7 @@ def get_meetup_participants(meetup_id):
     key = client.key('Meetup', meetup_id)
     meetup = client.get(key)
 
-    if not meetup or meetup.get('status') != 'active':
+    if not meetup or meetup.get('status') == 'cancelled':
         return error_response('MEETUP_NOT_FOUND', 'Meetup not found', 404)
 
     participant_ids = meetup.get('participants', [])
@@ -234,7 +249,7 @@ def get_meetup_messages(meetup_id):
     key = client.key('Meetup', meetup_id)
     meetup = client.get(key)
 
-    if not meetup or meetup.get('status') != 'active':
+    if not meetup or meetup.get('status') == 'cancelled':
         return error_response('MEETUP_NOT_FOUND', 'Meetup not found', 404)
 
     if user_id not in meetup.get('participants', []):
@@ -272,7 +287,7 @@ def send_meetup_message(meetup_id):
     key = client.key('Meetup', meetup_id)
     meetup = client.get(key)
 
-    if not meetup or meetup.get('status') != 'active':
+    if not meetup or meetup.get('status') == 'cancelled':
         return error_response('MEETUP_NOT_FOUND', 'Meetup not found', 404)
 
     if user_id not in meetup.get('participants', []):
