@@ -55,6 +55,11 @@ struct VerifyCodeView: View {
                             .keyboardType(.numberPad)
                             .textContentType(.oneTimeCode)
                             .focused($isCodeFocused)
+                            .onChange(of: code) { newValue in
+                                let digits = newValue.filter { $0.isNumber }
+                                let clamped = String(digits.prefix(6))
+                                if code != clamped { code = clamped }
+                            }
                             .padding()
                             .background(.ultraThinMaterial)
                             .cornerRadius(16)

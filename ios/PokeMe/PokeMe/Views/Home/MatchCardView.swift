@@ -225,16 +225,19 @@ struct DiscoverCardView: View {
     // MARK: - Compatibility Strip
 
     private func compatibilityStrip(score: Double, reasons: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        let isLow = score < 40
+        return VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 8) {
                 HStack(spacing: 4) {
-                    Image(systemName: "sparkles")
+                    Image(systemName: isLow ? "minus.circle" : "sparkles")
                         .font(.system(size: 13, weight: .semibold))
                     Text("\(Int(score.rounded()))%")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                 }
                 .foregroundStyle(
-                    .linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                    isLow
+                        ? AnyShapeStyle(Color(uiColor: .systemGray))
+                        : AnyShapeStyle(.linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing))
                 )
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -250,7 +253,7 @@ struct DiscoverCardView: View {
                 Spacer()
 
                 HStack(spacing: 4) {
-                    CircleProgress(value: score / 100)
+                    CircleProgress(value: score / 100, isLow: isLow)
                         .frame(width: 36, height: 36)
                     Image(systemName: "chevron.right")
                         .font(.system(size: 10, weight: .semibold))
@@ -269,10 +272,10 @@ struct DiscoverCardView: View {
                                     .font(.caption2)
                                     .fontWeight(.medium)
                             }
-                            .foregroundColor(.orange)
+                            .foregroundColor(isLow ? .secondary : .orange)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.orange.opacity(0.1))
+                            .background(isLow ? Color(uiColor: .systemGray5) : Color.orange.opacity(0.1))
                             .cornerRadius(20)
                         }
                     }
@@ -281,11 +284,12 @@ struct DiscoverCardView: View {
         }
         .padding(12)
         .background(
-            LinearGradient(
-                colors: [Color.orange.opacity(0.1), Color.pink.opacity(0.08)],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
+            isLow
+                ? AnyShapeStyle(Color(uiColor: .systemGray6))
+                : AnyShapeStyle(LinearGradient(
+                    colors: [Color.orange.opacity(0.1), Color.pink.opacity(0.08)],
+                    startPoint: .leading, endPoint: .trailing
+                ))
         )
         .cornerRadius(14)
     }
@@ -400,22 +404,29 @@ struct DiscoverCardView: View {
                 VStack(spacing: 24) {
                     // Overall score
                     if let score = user.recommendationScore {
+                        let isLow = score < 40
                         VStack(spacing: 6) {
                             HStack(spacing: 8) {
-                                Image(systemName: "sparkles")
+                                Image(systemName: isLow ? "minus.circle" : "sparkles")
                                     .font(.system(size: 20, weight: .semibold))
-                                    .foregroundColor(.orange)
+                                    .foregroundStyle(
+                                        isLow
+                                            ? AnyShapeStyle(Color(uiColor: .systemGray))
+                                            : AnyShapeStyle(Color.orange)
+                                    )
                                 Text("\(Int(score.rounded()))% Match")
                                     .font(.system(size: 32, weight: .bold, design: .rounded))
                                     .foregroundStyle(
-                                        .linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                                        isLow
+                                            ? AnyShapeStyle(Color(uiColor: .systemGray))
+                                            : AnyShapeStyle(.linearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing))
                                     )
                             }
                             Text("with \(user.displayName)")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
 
-                            CircleProgress(value: score / 100)
+                            CircleProgress(value: score / 100, isLow: isLow)
                                 .frame(width: 64, height: 64)
                                 .padding(.top, 4)
                         }
@@ -567,6 +578,7 @@ struct DiscoverCardView: View {
 
 struct CircleProgress: View {
     let value: Double // 0.0 – 1.0
+    var isLow: Bool = false
 
     var body: some View {
         ZStack {
@@ -575,7 +587,9 @@ struct CircleProgress: View {
             Circle()
                 .trim(from: 0, to: max(0, min(1, value)))
                 .stroke(
-                    LinearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing),
+                    isLow
+                        ? AnyShapeStyle(Color(uiColor: .systemGray3))
+                        : AnyShapeStyle(LinearGradient(colors: [.orange, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)),
                     style: StrokeStyle(lineWidth: 3, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
