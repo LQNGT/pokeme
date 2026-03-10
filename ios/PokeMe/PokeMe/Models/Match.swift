@@ -7,6 +7,10 @@ struct Match: Codable, Identifiable {
     let partnerSports: [SportEntry]?
     let partnerCollegeYear: String?
     let partnerProfilePicture: String?
+    let partnerBio: String?
+    let partnerMajor: String?
+    let partnerAvailability: [String: [String]]?
+    let partnerSocials: Socials?
     let status: String
     let lastMessage: LastMessage?
     let createdAt: String

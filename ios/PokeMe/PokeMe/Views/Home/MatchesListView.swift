@@ -1001,6 +1001,10 @@ struct PartnerProfileSheet: View {
     let match: Match
     @Environment(\.dismiss) var dismiss
 
+    private let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    private let dayAbbrs = ["M", "T", "W", "T", "F", "S", "S"]
+    private let slots = ["Morning", "Afternoon", "Evening"]
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -1012,9 +1016,9 @@ struct PartnerProfileSheet: View {
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
-                        .frame(height: 200)
+                        .frame(height: 220)
 
-                        VStack(spacing: 12) {
+                        VStack(spacing: 10) {
                             // Avatar
                             ZStack {
                                 Circle()
@@ -1037,57 +1041,107 @@ struct PartnerProfileSheet: View {
                             }
 
                             Text(match.partnerName)
-                                .font(.system(size: 26, weight: .bold, design: .rounded))
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
 
-                            if let year = match.partnerCollegeYear {
-                                Text(year)
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
+                            HStack(spacing: 8) {
+                                if let year = match.partnerCollegeYear {
+                                    Text(year)
+                                        .font(.caption)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 4)
+                                        .background(Color.white.opacity(0.2))
+                                        .cornerRadius(10)
+                                }
+                                if let major = match.partnerMajor, !major.isEmpty {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "book.closed.fill")
+                                            .font(.caption2)
+                                        Text(major)
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                    }
                                     .foregroundColor(.white.opacity(0.9))
-                                    .padding(.horizontal, 12)
+                                    .padding(.horizontal, 10)
                                     .padding(.vertical, 4)
                                     .background(Color.white.opacity(0.2))
                                     .cornerRadius(10)
+                                }
                             }
                         }
-                        .padding(.top, 16)
+                        .padding(.top, 20)
                     }
 
-                    // Sports section
-                    if let sports = match.partnerSports, !sports.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Label("Sports", systemImage: "figure.run")
-                                .font(.headline)
-
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
+                    VStack(spacing: 12) {
+                        // Sports
+                        if let sports = match.partnerSports, !sports.isEmpty {
+                            profileSection(title: "Sports", icon: "trophy.fill", gradient: [.orange, .pink]) {
+                                VStack(spacing: 8) {
                                     ForEach(sports) { sport in
-                                        HStack(spacing: 4) {
+                                        HStack {
+                                            Text(sportEmoji(sport.sport))
+                                                .font(.title3)
                                             Text(sport.sport)
                                                 .fontWeight(.medium)
+                                            Spacer()
                                             Text(sport.skillLevel)
                                                 .font(.caption)
-                                                .foregroundColor(.orange.opacity(0.7))
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 10)
+                                                .padding(.vertical, 4)
+                                                .background(skillColor(sport.skillLevel))
+                                                .cornerRadius(10)
                                         }
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(Color.orange.opacity(0.12))
-                                        .foregroundColor(.orange)
-                                        .cornerRadius(14)
                                     }
                                 }
                             }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(16)
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
+
+                        // Availability
+                        if let availability = match.partnerAvailability, !availability.isEmpty {
+                            profileSection(title: "Availability", icon: "calendar", gradient: [.green, .teal]) {
+                                availabilityGrid(availability: availability)
+                            }
+                        }
+
+                        // Bio
+                        if let bio = match.partnerBio, !bio.isEmpty {
+                            profileSection(title: "About", icon: "quote.bubble.fill", gradient: [.purple, .indigo]) {
+                                Text(bio)
+                                    .font(.body)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+
+                        // Socials
+                        if let socials = match.partnerSocials,
+                           [socials.instagram, socials.twitter, socials.snapchat, socials.linkedin].contains(where: { $0 != nil && !($0?.isEmpty ?? true) }) {
+                            profileSection(title: "Socials", icon: "at", gradient: [.blue, .cyan]) {
+                                HStack(spacing: 10) {
+                                    if let ig = socials.instagram, !ig.isEmpty {
+                                        socialBadge(icon: "camera.fill", label: ig, colors: [.pink, .purple, .orange])
+                                    }
+                                    if let tw = socials.twitter, !tw.isEmpty {
+                                        socialBadge(icon: "at", label: tw, colors: [.blue, .cyan])
+                                    }
+                                    if let sc = socials.snapchat, !sc.isEmpty {
+                                        socialBadge(icon: "message.fill", label: sc, colors: [.yellow, .green])
+                                    }
+                                    if let li = socials.linkedin, !li.isEmpty {
+                                        socialBadge(icon: "briefcase.fill", label: li, colors: [.blue, .indigo])
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 32)
                 }
-                .padding(.bottom, 32)
             }
             .ignoresSafeArea(edges: .top)
             .navigationBarTitleDisplayMode(.inline)
@@ -1100,6 +1154,105 @@ struct PartnerProfileSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+
+    private func profileSection<Content: View>(
+        title: String, icon: String, gradient: [Color],
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Label(title, systemImage: icon)
+                    .font(.headline)
+                    .foregroundStyle(.linearGradient(colors: gradient, startPoint: .leading, endPoint: .trailing))
+                Spacer()
+            }
+            .padding()
+
+            Divider().padding(.horizontal)
+
+            content()
+                .padding()
+        }
+        .background(Color(uiColor: .systemGray6))
+        .cornerRadius(16)
+    }
+
+    private func availabilityGrid(availability: [String: [String]]) -> some View {
+        VStack(spacing: 2) {
+            HStack(spacing: 0) {
+                Text("").frame(width: 46)
+                ForEach(Array(dayAbbrs.enumerated()), id: \.offset) { _, abbr in
+                    Text(abbr)
+                        .font(.system(size: 9, weight: .semibold))
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.secondary)
+                }
+            }
+            ForEach(slots, id: \.self) { slot in
+                HStack(spacing: 0) {
+                    Text(slot)
+                        .font(.system(size: 8))
+                        .frame(width: 46, alignment: .leading)
+                        .foregroundColor(.secondary)
+                    ForEach(days, id: \.self) { day in
+                        let isOn = availability[day]?.contains(slot) ?? false
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(
+                                isOn
+                                    ? LinearGradient(colors: [.green, .mint], startPoint: .top, endPoint: .bottom)
+                                    : LinearGradient(colors: [Color(uiColor: .systemGray5), Color(uiColor: .systemGray5)], startPoint: .top, endPoint: .bottom)
+                            )
+                            .frame(height: 18)
+                            .padding(1.5)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func socialBadge(icon: String, label: String, colors: [Color]) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .foregroundStyle(.linearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+            Text("@\(label)")
+                .font(.caption)
+                .fontWeight(.medium)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(colors.first?.opacity(0.1) ?? Color.clear)
+        .cornerRadius(20)
+    }
+
+    private func skillColor(_ level: String) -> LinearGradient {
+        switch level {
+        case "Advanced":     return LinearGradient(colors: [.orange, .red], startPoint: .leading, endPoint: .trailing)
+        case "Intermediate": return LinearGradient(colors: [.blue, .cyan], startPoint: .leading, endPoint: .trailing)
+        default:             return LinearGradient(colors: [.green, .mint], startPoint: .leading, endPoint: .trailing)
+        }
+    }
+
+    private func sportEmoji(_ sport: String) -> String {
+        switch sport.lowercased() {
+        case "basketball": return "🏀"
+        case "tennis": return "🎾"
+        case "soccer": return "⚽"
+        case "volleyball": return "🏐"
+        case "badminton": return "🏸"
+        case "running": return "🏃"
+        case "swimming": return "🏊"
+        case "cycling": return "🚴"
+        case "table tennis": return "🏓"
+        case "football": return "🏈"
+        case "baseball": return "⚾"
+        case "golf": return "⛳"
+        case "hiking": return "🥾"
+        case "yoga": return "🧘"
+        case "rock climbing": return "🧗"
+        default: return "🏅"
+        }
     }
 }
 

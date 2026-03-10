@@ -384,6 +384,10 @@ def get_matches():
                 'partnerSports': pd.get('sports', []),
                 'partnerCollegeYear': pd.get('collegeYear'),
                 'partnerProfilePicture': pd.get('profilePicture'),
+                'partnerBio': pd.get('bio'),
+                'partnerMajor': pd.get('major'),
+                'partnerAvailability': pd.get('availability'),
+                'partnerSocials': pd.get('socials'),
                 'status': m.get('status'),
                 'lastMessage': last_message,
                 'createdAt': m.get('createdAt')
