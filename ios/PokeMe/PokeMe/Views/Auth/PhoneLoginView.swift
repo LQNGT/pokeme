@@ -10,8 +10,6 @@ struct PhoneLoginView: View {
     @State private var normalizedPhone = ""
     @State private var animateGradient = false
     @State private var bounceEmoji = false
-    @State private var showRegister = false
-
     private let sportEmojis = ["🏀", "⚽", "🎾", "🏐", "🏸", "🏊", "🚴", "🏓"]
 
     private func formatPhoneNumber(_ digits: String) -> String {
@@ -145,28 +143,6 @@ struct PhoneLoginView: View {
                 .padding(.horizontal, 28)
 
                 Spacer()
-
-                VStack(spacing: 12) {
-                    Button(action: { authViewModel.showEmailLogin = true }) {
-                        HStack {
-                            Text("Prefer email?")
-                                .foregroundColor(.white.opacity(0.6))
-                            Text("Login with email")
-                                .foregroundColor(.white)
-                                .fontWeight(.semibold)
-                        }
-                    }
-                    Button(action: { showRegister = true }) {
-                        HStack {
-                            Text("Don't have an account?")
-                                .foregroundColor(.white.opacity(0.6))
-                            Text("Register")
-                                .foregroundColor(.white)
-                                .fontWeight(.semibold)
-                        }
-                    }
-                }
-                .padding(.bottom, 32)
             }
         }
         .onAppear {
@@ -175,10 +151,6 @@ struct PhoneLoginView: View {
         }
         .sheet(isPresented: $showVerification) {
             VerifyCodeView(phone: normalizedPhone)
-                .environmentObject(authViewModel)
-        }
-        .sheet(isPresented: $showRegister) {
-            RegisterView()
                 .environmentObject(authViewModel)
         }
     }

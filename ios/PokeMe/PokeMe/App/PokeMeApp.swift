@@ -29,9 +29,6 @@ struct PokeMeApp: App {
                         HomeView()
                             .environmentObject(authViewModel)
                     }
-                } else if authViewModel.showEmailLogin {
-                    LoginView()
-                        .environmentObject(authViewModel)
                 } else {
                     PhoneLoginView()
                         .environmentObject(authViewModel)

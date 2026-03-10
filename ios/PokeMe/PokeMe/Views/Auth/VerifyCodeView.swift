@@ -137,7 +137,7 @@ struct VerifyCodeView: View {
             do {
                 let response = try await PhoneAuthService.shared.verifyCode(phone: phone, code: code)
                 await MainActor.run {
-                    authViewModel.handlePhoneLogin(token: response.token, user: response.user)
+                    authViewModel.handlePhoneLogin(token: response.token, user: response.user, isNewUser: response.isNewUser)
                     dismiss()
                 }
             } catch let error as NetworkError {

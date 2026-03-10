@@ -8,7 +8,6 @@ class AuthViewModel: ObservableObject {
     @Published var needsOnboarding = false
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var showEmailLogin = false
 
     private var token: String? {
         get { UserDefaults.standard.string(forKey: Constants.StorageKeys.authToken) }
@@ -90,16 +89,16 @@ class AuthViewModel: ObservableObject {
         token = nil
         user = nil
         isAuthenticated = false
-        showEmailLogin = false
     }
 
     func getToken() -> String? {
         return token
     }
 
-    func handlePhoneLogin(token: String, user: User) {
+    func handlePhoneLogin(token: String, user: User, isNewUser: Bool) {
         self.token = token
         self.user = user
         self.isAuthenticated = true
+        self.needsOnboarding = isNewUser
     }
 }

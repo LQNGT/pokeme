@@ -64,7 +64,7 @@ struct LoginView: View {
                 Spacer()
 
                 VStack(spacing: 12) {
-                    Button(action: { authViewModel.showEmailLogin = false }) {
+                    Button(action: { }) {
                         HStack {
                             Text("Prefer number?")
                                 .foregroundColor(.secondary)
