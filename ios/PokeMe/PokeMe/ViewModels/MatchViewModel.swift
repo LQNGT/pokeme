@@ -10,6 +10,7 @@ class MatchViewModel: ObservableObject {
     @Published var blockedMatches: [Match] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var groupChatUnreadCounts: [String: Int] = [:]
 
     private var pollTimer: Timer?
     private var meetupPollTimer: Timer?
@@ -20,6 +21,7 @@ class MatchViewModel: ObservableObject {
     private let deletedMeetupsKey = "deletedMeetupsArchive"
     private let blockedMatchesKey = "blockedMatchesArchive"
     private var hasCompletedInitialMatchSync: Bool
+    private let groupChatLastOpenedKeyPrefix = "groupChatLastOpened_"
 
     init() {
         let saved = UserDefaults.standard.stringArray(forKey: "seenMatchIds") ?? []
@@ -103,8 +105,42 @@ class MatchViewModel: ObservableObject {
         do {
             let meetupResponse = try await MeetupService.shared.getMyMeetups(token: token)
             groupChats = meetupResponse.meetups
+            await updateGroupChatUnreadCounts(token: token)
         } catch {
             // Keep existing groupChats on transient failures so stale data stays visible
+        }
+    }
+
+    func markGroupChatRead(meetupId: String) {
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        UserDefaults.standard.set(iso.string(from: Date()), forKey: groupChatLastOpenedKeyPrefix + meetupId)
+        groupChatUnreadCounts[meetupId] = 0
+    }
+
+    private func updateGroupChatUnreadCounts(token: String) async {
+        let isoFull = ISO8601DateFormatter()
+        isoFull.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let isoBasic = ISO8601DateFormatter()
+        isoBasic.formatOptions = [.withInternetDateTime]
+
+        for meetup in groupChats {
+            guard let response = try? await MeetupService.shared.getMeetupMessages(token: token, meetupId: meetup.id) else { continue }
+
+            let lastOpenedStr = UserDefaults.standard.string(forKey: groupChatLastOpenedKeyPrefix + meetup.id)
+            let lastOpened: Date
+            if let str = lastOpenedStr,
+               let date = isoFull.date(from: str) ?? isoBasic.date(from: str) {
+                lastOpened = date
+            } else {
+                lastOpened = .distantPast
+            }
+
+            let unread = response.messages.filter { msg in
+                let date = isoFull.date(from: msg.createdAt) ?? isoBasic.date(from: msg.createdAt)
+                return (date ?? .distantPast) > lastOpened
+            }.count
+            groupChatUnreadCounts[meetup.id] = unread
         }
     }
 

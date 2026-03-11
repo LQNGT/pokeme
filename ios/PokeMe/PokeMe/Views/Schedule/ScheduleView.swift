@@ -318,7 +318,7 @@ struct ScheduleView: View {
             VStack(alignment: .leading, spacing: 6) {
                 detailRow(icon: "figure.run", label: "Sport", value: m.sport)
                 detailRow(icon: "calendar", label: "Date", value: formatShortDate(m.date, fallback: m.date))
-                detailRow(icon: "clock", label: "Time", value: m.time)
+                detailRow(icon: "clock", label: "Time", value: formatMeetupTime(m.time))
                 if let loc = m.location, !loc.isEmpty {
                     detailRow(icon: "mappin", label: "Location", value: loc)
                 }
@@ -457,7 +457,7 @@ struct ScheduleView: View {
             let timeStr = "\(AvailabilityHelper.formatHour(s.startHour))–\(AvailabilityHelper.formatHour(s.endHour))"
             return "\(dateStr) · \(timeStr)"
         case .meetup(let m):
-            return "\(m.date) · \(m.time)"
+            return "\(formatMeetupDateShort(m.date)) · \(formatMeetupTime(m.time))"
         }
     }
 
@@ -466,6 +466,30 @@ struct ScheduleView: View {
         case .session(let s): return s.location
         case .meetup(let m):  return m.location
         }
+    }
+
+    /// Converts "yyyy-MM-dd" → "EEE, M/d" (e.g. "Wed, 3/12").
+    private func formatMeetupDateShort(_ isoDate: String) -> String {
+        let input = DateFormatter()
+        input.locale = Locale(identifier: "en_US_POSIX")
+        input.dateFormat = "yyyy-MM-dd"
+        guard let date = input.date(from: isoDate) else { return isoDate }
+        let output = DateFormatter()
+        output.locale = Locale(identifier: "en_US_POSIX")
+        output.dateFormat = "EEE, M/d"
+        return output.string(from: date)
+    }
+
+    /// Converts "HH:mm" → "h:mm a" (e.g. "14:30" → "2:30 PM").
+    private func formatMeetupTime(_ hhmm: String) -> String {
+        let input = DateFormatter()
+        input.locale = Locale(identifier: "en_US_POSIX")
+        input.dateFormat = "HH:mm"
+        guard let date = input.date(from: hhmm) else { return hhmm }
+        let output = DateFormatter()
+        output.locale = Locale(identifier: "en_US_POSIX")
+        output.dateFormat = "h:mm a"
+        return output.string(from: date)
     }
 
     /// Converts "yyyy-MM-dd" → "M/d/yy" (e.g. "3/7/26"); falls back to `fallback` if unparseable.

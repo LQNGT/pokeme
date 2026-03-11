@@ -306,6 +306,15 @@ class DiscoverViewModel: ObservableObject {
                     try? await UNUserNotificationCenter.current().add(request)
                 }
             }
+
+            // Move poked card to bottom after a brief pause so the "Poked!" state is visible
+            try? await Task.sleep(nanoseconds: 400_000_000)
+            withAnimation(.easeInOut(duration: 0.35)) {
+                if let idx = profiles.firstIndex(where: { $0.id == user.id }) {
+                    let poked = profiles.remove(at: idx)
+                    profiles.append(poked)
+                }
+            }
         } catch let error as NetworkError {
             errorMessage = error.errorDescription
         } catch {

@@ -76,9 +76,13 @@ struct MatchesListView: View {
                                 if !filteredGroupChats.isEmpty {
                                     Section("Group Chats") {
                                         ForEach(filteredGroupChats) { meetup in
-                                            Button(action: { selectedGroupChat = meetup }) {
+                                            Button(action: {
+                                                viewModel.markGroupChatRead(meetupId: meetup.id)
+                                                selectedGroupChat = meetup
+                                            }) {
                                                 MeetupGroupChatRow(
                                                     meetup: meetup,
+                                                    unreadCount: viewModel.groupChatUnreadCounts[meetup.id] ?? 0,
                                                     onAvatarTap: { selectedGroupMembers = meetup }
                                                 )
                                             }
@@ -577,6 +581,7 @@ struct BlockedMatchRow: View {
 
 struct MeetupGroupChatRow: View {
     let meetup: Meetup
+    var unreadCount: Int = 0
     var onAvatarTap: (() -> Void)? = nil
 
     var body: some View {
@@ -598,12 +603,24 @@ struct MeetupGroupChatRow: View {
                             .foregroundColor(.white.opacity(0.85))
                     }
                 }
+                .overlay(alignment: .topTrailing) {
+                    if unreadCount > 0 {
+                        Text(unreadCount > 9 ? "9+" : "\(unreadCount)")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Capsule().fill(Color.purple))
+                            .offset(x: 4, y: -4)
+                    }
+                }
             }
             .buttonStyle(.plain)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(meetup.title)
                     .font(.headline)
+                    .fontWeight(unreadCount > 0 ? .bold : .semibold)
                     .lineLimit(1)
                 HStack(spacing: 4) {
                     Text("\(meetup.participantCount) players")

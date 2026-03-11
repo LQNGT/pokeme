@@ -241,16 +241,20 @@ struct MeetupDetailView: View {
         }
         .sheet(item: $selectedParticipant) { participant in
             NavigationView {
-                ParticipantProfileSheet(user: participant)
-                    .navigationTitle(participant.displayName)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") { selectedParticipant = nil }
-                                .fontWeight(.semibold)
-                                .foregroundColor(.orange)
-                        }
+                ParticipantProfileSheet(
+                    user: participant,
+                    token: authViewModel.getToken(),
+                    currentUserId: authViewModel.user?.id ?? ""
+                )
+                .navigationTitle(participant.displayName)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Done") { selectedParticipant = nil }
+                            .fontWeight(.semibold)
+                            .foregroundColor(.orange)
                     }
+                }
             }
         }
         .sheet(isPresented: $showGroupChat) {
@@ -262,6 +266,12 @@ struct MeetupDetailView: View {
 
 struct ParticipantProfileSheet: View {
     let user: User
+    var token: String? = nil
+    var currentUserId: String = ""
+
+    @State private var pokeStatus: ParticipantPokeStatus = .notPoked
+
+    private enum ParticipantPokeStatus { case notPoked, poking, poked, matched }
 
     var body: some View {
         ScrollView {
@@ -335,9 +345,53 @@ struct ParticipantProfileSheet: View {
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
+
+                    // Poke button — hidden for own profile
+                    if user.id != currentUserId {
+                        Button {
+                            Task { await pokeParticipant() }
+                        } label: {
+                            HStack(spacing: 10) {
+                                Image(systemName: pokeStatus == .notPoked || pokeStatus == .poking
+                                      ? "hand.point.right.fill" : "checkmark")
+                                    .font(.system(size: 18, weight: .bold))
+                                Text(
+                                    pokeStatus == .poked ? "Poked!" :
+                                    pokeStatus == .matched ? "Matched!" :
+                                    pokeStatus == .poking ? "Poking…" : "Poke to Play"
+                                )
+                                .font(.headline.bold())
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 15)
+                            .background(
+                                pokeStatus == .notPoked || pokeStatus == .poking
+                                    ? LinearGradient(colors: [.orange, .pink], startPoint: .leading, endPoint: .trailing)
+                                    : LinearGradient(colors: [.green, .mint], startPoint: .leading, endPoint: .trailing)
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
+                            .shadow(color: (pokeStatus == .notPoked ? Color.orange : Color.green).opacity(0.3),
+                                    radius: 8, x: 0, y: 4)
+                        }
+                        .disabled(pokeStatus != .notPoked)
+                        .padding(.top, 8)
+                    }
                 }
                 .padding(20)
             }
+        }
+    }
+
+    @MainActor
+    private func pokeParticipant() async {
+        guard let token else { return }
+        pokeStatus = .poking
+        do {
+            let response = try await MatchService.shared.poke(token: token, userId: user.id)
+            pokeStatus = response.status == "matched" ? .matched : .poked
+        } catch {
+            pokeStatus = .notPoked
         }
     }
 
