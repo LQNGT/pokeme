@@ -52,7 +52,7 @@ struct MeetupsListView: View {
                                     selectedSport = sport
                                     viewModel.sportFilter = sport == "All" ? nil : sport
                                     Task {
-                                        await viewModel.fetchMeetups(token: authViewModel.getToken(), currentUserId: authViewModel.user?.id)
+                                        await viewModel.fetchMeetups(token: authViewModel.getToken(), currentUserId: authViewModel.user?.id, showLoadingSpinner: true)
                                     }
                                 }) {
                                     Text(sport)

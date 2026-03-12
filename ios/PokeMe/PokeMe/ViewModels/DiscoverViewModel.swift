@@ -87,13 +87,13 @@ class DiscoverViewModel: ObservableObject {
         }
     }
 
-    func fetchProfiles(token: String?, currentUser: User? = nil) async {
+    func fetchProfiles(token: String?, currentUser: User? = nil, showLoadingSpinner: Bool = false) async {
         guard let token = token else {
             errorMessage = "Not authenticated"
             return
         }
 
-        isLoading = profiles.isEmpty
+        isLoading = profiles.isEmpty || showLoadingSpinner
         errorMessage = nil
 
         do {

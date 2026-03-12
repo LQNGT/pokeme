@@ -124,25 +124,36 @@ class MatchViewModel: ObservableObject {
         isoFull.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         let isoBasic = ISO8601DateFormatter()
         isoBasic.formatOptions = [.withInternetDateTime]
+        let meetups = groupChats
+        let prefix = groupChatLastOpenedKeyPrefix
 
-        for meetup in groupChats {
-            guard let response = try? await MeetupService.shared.getMeetupMessages(token: token, meetupId: meetup.id) else { continue }
-
-            let lastOpenedStr = UserDefaults.standard.string(forKey: groupChatLastOpenedKeyPrefix + meetup.id)
-            let lastOpened: Date
-            if let str = lastOpenedStr,
-               let date = isoFull.date(from: str) ?? isoBasic.date(from: str) {
-                lastOpened = date
-            } else {
-                lastOpened = .distantPast
+        var counts: [String: Int] = [:]
+        await withTaskGroup(of: (String, Int).self) { group in
+            for meetup in meetups {
+                group.addTask {
+                    guard let response = try? await MeetupService.shared.getMeetupMessages(token: token, meetupId: meetup.id) else {
+                        return (meetup.id, 0)
+                    }
+                    let lastOpenedStr = UserDefaults.standard.string(forKey: prefix + meetup.id)
+                    let lastOpened: Date
+                    if let str = lastOpenedStr,
+                       let date = isoFull.date(from: str) ?? isoBasic.date(from: str) {
+                        lastOpened = date
+                    } else {
+                        lastOpened = .distantPast
+                    }
+                    let unread = response.messages.filter { msg in
+                        let date = isoFull.date(from: msg.createdAt) ?? isoBasic.date(from: msg.createdAt)
+                        return (date ?? .distantPast) > lastOpened
+                    }.count
+                    return (meetup.id, unread)
+                }
             }
-
-            let unread = response.messages.filter { msg in
-                let date = isoFull.date(from: msg.createdAt) ?? isoBasic.date(from: msg.createdAt)
-                return (date ?? .distantPast) > lastOpened
-            }.count
-            groupChatUnreadCounts[meetup.id] = unread
+            for await (meetupId, count) in group {
+                counts[meetupId] = count
+            }
         }
+        groupChatUnreadCounts.merge(counts) { _, new in new }
     }
 
     func deleteMatch(token: String?, matchId: String) async {

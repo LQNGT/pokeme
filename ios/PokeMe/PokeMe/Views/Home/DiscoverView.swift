@@ -13,7 +13,7 @@ struct DiscoverView: View {
                     HStack(spacing: 8) {
                         FilterChip(label: "All", emoji: "🔥", isSelected: viewModel.selectedSport == nil) {
                             viewModel.selectedSport = nil
-                            Task { await viewModel.fetchProfiles(token: authViewModel.getToken(), currentUser: authViewModel.user) }
+                            Task { await viewModel.fetchProfiles(token: authViewModel.getToken(), currentUser: authViewModel.user, showLoadingSpinner: true) }
                         }
 
                         ForEach(Sport.allCases, id: \.self) { sport in
@@ -23,7 +23,7 @@ struct DiscoverView: View {
                                 isSelected: viewModel.selectedSport == sport.rawValue
                             ) {
                                 viewModel.selectedSport = sport.rawValue
-                                Task { await viewModel.fetchProfiles(token: authViewModel.getToken(), currentUser: authViewModel.user) }
+                                Task { await viewModel.fetchProfiles(token: authViewModel.getToken(), currentUser: authViewModel.user, showLoadingSpinner: true) }
                             }
                         }
                     }

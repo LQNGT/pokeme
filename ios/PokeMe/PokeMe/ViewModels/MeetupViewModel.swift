@@ -17,9 +17,9 @@ class MeetupViewModel: ObservableObject {
         set { UserDefaults.standard.set(newValue, forKey: "meetupParticipantCounts") }
     }
 
-    func fetchMeetups(token: String?, currentUserId: String? = nil) async {
+    func fetchMeetups(token: String?, currentUserId: String? = nil, showLoadingSpinner: Bool = false) async {
         guard let token = token else { return }
-        isLoading = meetups.isEmpty
+        isLoading = meetups.isEmpty || showLoadingSpinner
 
         do {
             let response = try await MeetupService.shared.getMeetups(token: token, sport: sportFilter)
@@ -54,7 +54,7 @@ class MeetupViewModel: ObservableObject {
 
     func startPolling(token: String?, currentUserId: String?) {
         stopPolling()
-        let timer = Timer(timeInterval: 5.0, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: 30.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 await self?.fetchMeetups(token: token, currentUserId: currentUserId)
             }
