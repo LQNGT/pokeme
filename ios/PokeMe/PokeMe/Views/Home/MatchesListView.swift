@@ -278,7 +278,10 @@ struct MatchesListView: View {
     private var deletedTab: some View {
         Group {
             if isTrashEmpty {
-                VStack(spacing: 16) {
+                VStack(spacing: 0) {
+                    filterPickerRow
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
                     Spacer()
                     Image(systemName: "trash")
                         .font(.system(size: 52))
