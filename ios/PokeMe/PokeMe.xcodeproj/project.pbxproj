@@ -30,7 +30,6 @@
 		A0ABD37782000374CC10F595 /* MatchCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5044193EB50C1D1CA5112F5 /* MatchCardView.swift */; };
 		A1A1A1A1A1A1A1A1A1A1A1A1 /* AvailabilityHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11AA11AA11AA11AA11AA11 /* AvailabilityHelper.swift */; };
 		A5D375809BFC687CE6924B36 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FAB7FEA277127034E8942AB /* MessageService.swift */; };
-		MC01MC01MC01MC01MC01MC01 /* MessageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = MC00MC00MC00MC00MC00MC00 /* MessageCache.swift */; };
 		A7A7A7A7A7A7A7A7A7A7A7A7 /* ProposalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A771A771A771A771A771A77 /* ProposalSheet.swift */; };
 		AA1234560000000000000002 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1234560000000000000001 /* OnboardingView.swift */; };
 		ADE24390A25C244FBA4C819A /* MatchesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52ED4ECFB0A2BEBD9C8188FC /* MatchesListView.swift */; };
@@ -67,6 +66,8 @@
 		FCACCB55FDDE104290742AAF /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB9313AB993FE2599C176F1 /* ChatView.swift */; };
 		FCFCFCFCFCFCFCFCFCFCFCFC /* MeetupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FCC6FCC6FCC6FCC6FCC6FCC /* MeetupDetailView.swift */; };
 		FD6E4B2C1038596A7D9F3E50 /* MeetupChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58E96D30F2C147A5B803DE91 /* MeetupChatView.swift */; };
+		MC01MC01MC01MC01MC01MC01 /* MessageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = MC00MC00MC00MC00MC00MC00 /* MessageCache.swift */; };
+		AC00AC00AC00AC00AC00AC00 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC01AC01AC01AC01AC01AC01 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,7 +96,6 @@
 		47D85C29E1B036F4A792CD80 /* MeetupChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupChatViewModel.swift; sourceTree = "<group>"; };
 		4DAA4DAA4DAA4DAA4DAA4DAA /* MeetupCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupCardView.swift; sourceTree = "<group>"; };
 		4FAB7FEA277127034E8942AB /* MessageService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageService.swift; sourceTree = "<group>"; };
-		MC00MC00MC00MC00MC00MC00 /* MessageCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageCache.swift; sourceTree = "<group>"; };
 		52ED4ECFB0A2BEBD9C8188FC /* MatchesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MatchesListView.swift; path = PokeMe/Views/Home/MatchesListView.swift; sourceTree = SOURCE_ROOT; };
 		53E0B99F8F6A39A7EBB6B58D /* PhoneLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneLoginView.swift; sourceTree = "<group>"; };
 		577CE611175CC7D7E7C453C6 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
@@ -120,7 +120,6 @@
 		AA1234560000000000000001 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AABC1234AABC1234AABC1234 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		AB12AB12AB12AB12AB12AB12 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		E7F7E7F7E7F7E7F7E7F7E7F7 /* USPhoneNumberFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USPhoneNumberFormatter.swift; sourceTree = "<group>"; };
 		B2C3D4E5F60718293A4B5C6D /* MessageNotificationPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageNotificationPoller.swift; sourceTree = "<group>"; };
 		B5044193EB50C1D1CA5112F5 /* MatchCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCardView.swift; sourceTree = "<group>"; };
 		B8CD4925A6B741F2853401F3 /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DiscoverViewModel.swift; path = PokeMe/ViewModels/DiscoverViewModel.swift; sourceTree = SOURCE_ROOT; };
@@ -129,16 +128,20 @@
 		CC33CC33CC33CC33CC33CC33 /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		CCDE3456CCDE3456CCDE3456 /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
 		CE86E5D860927083FB2C3392 /* Match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
-		D72E1E13C11A400C44CBC0BD /* PokeMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PokeMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D72E1E13C11A400C44CBC0BD /* DavisPokeMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DavisPokeMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA042010EE252EADC0F83D60 /* ProfileViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		DB97E34932BE2D88C528C58A /* ProfileView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		DD44DD44DD44DD44DD44DD44 /* Meetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meetup.swift; sourceTree = "<group>"; };
 		E2F3E2F3E2F3E2F3E2F3E2F3 /* SessionPinnedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPinnedCard.swift; sourceTree = "<group>"; };
 		E5118346218D8C2049721A35 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		E7F7E7F7E7F7E7F7E7F7E7F7 /* USPhoneNumberFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USPhoneNumberFormatter.swift; sourceTree = "<group>"; };
 		EE55EE55EE55EE55EE55EE55 /* MeetupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupService.swift; sourceTree = "<group>"; };
 		F14FCB344B3F8370AC6DB51F /* EditProfileView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		F2009AAFF343A3A959EF007E /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
 		FF66FF66FF66FF66FF66FF66 /* MeetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeetupViewModel.swift; sourceTree = "<group>"; };
+		MC00MC00MC00MC00MC00MC00 /* MessageCache.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageCache.swift; sourceTree = "<group>"; };
+		AC01AC01AC01AC01AC01AC01 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AC03AC03AC03AC03AC03AC03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -157,8 +160,8 @@
 				AA11AA11AA11AA11AA11AA11 /* AvailabilityHelper.swift */,
 				A1E2C3D4B5F60718293A4B5C /* NotificationManager.swift */,
 				AB12AB12AB12AB12AB12AB12 /* Theme.swift */,
-			MC00MC00MC00MC00MC00MC00 /* MessageCache.swift */,
-			E7F7E7F7E7F7E7F7E7F7E7F7 /* USPhoneNumberFormatter.swift */,
+				MC00MC00MC00MC00MC00MC00 /* MessageCache.swift */,
+				E7F7E7F7E7F7E7F7E7F7E7F7 /* USPhoneNumberFormatter.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -193,6 +196,8 @@
 		494F3351201E6AAE37894950 /* PokeMe */ = {
 			isa = PBXGroup;
 			children = (
+				AC01AC01AC01AC01AC01AC01 /* Assets.xcassets */,
+				AC03AC03AC03AC03AC03AC03 /* Info.plist */,
 				CDE904DD23963331FD89DCB5 /* App */,
 				22A35F2F660D839F9AAE8EC6 /* Models */,
 				2EFD3DB86293129D6D76A22D /* Services */,
@@ -309,7 +314,7 @@
 		E7054A08EB8F1403A11B2A6D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D72E1E13C11A400C44CBC0BD /* PokeMe.app */,
+				D72E1E13C11A400C44CBC0BD /* DavisPokeMe.app */,
 				7E56F3C0BB3280C7B2BD7149 /* PokeMeTests.xctest */,
 			);
 			name = Products;
@@ -358,6 +363,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 40DBDB2B08BA129A8BF2AE8C /* Build configuration list for PBXNativeTarget "PokeMe" */;
 			buildPhases = (
+				AC02AC02AC02AC02AC02AC02 /* Resources */,
 				DA2D66E6515B96F0A98C0C5B /* Sources */,
 			);
 			buildRules = (
@@ -366,7 +372,7 @@
 			);
 			name = PokeMe;
 			productName = PokeMe;
-			productReference = D72E1E13C11A400C44CBC0BD /* PokeMe.app */;
+			productReference = D72E1E13C11A400C44CBC0BD /* DavisPokeMe.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -402,6 +408,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AC02AC02AC02AC02AC02AC02 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC00AC00AC00AC00AC00AC00 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		497C34E9D25BAA58CFB1B4C3 /* Sources */ = {
@@ -572,7 +589,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.pokeme.app.tests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PokeMe.app/PokeMe";
 			};
 			name = Debug;
@@ -583,13 +600,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 99B72Z9R5D;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				REQUIRES_FULL_SCREEN = YES;
+				DEVELOPMENT_TEAM = WH5D8RR7HS;
+				INFOPLIST_FILE = PokeMe/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -599,11 +611,12 @@
 					"$(SRCROOT)/PokeMe/Views/Home",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.teddy.pokemeecs191;
-				PRODUCT_NAME = PokeMe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.manavsharma.pokeme;
+				PRODUCT_NAME = DavisPokeMe;
+				REQUIRES_FULL_SCREEN = YES;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 			};
 			name = Release;
 		};
@@ -613,13 +626,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 99B72Z9R5D;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				REQUIRES_FULL_SCREEN = YES;
+				DEVELOPMENT_TEAM = WH5D8RR7HS;
+				INFOPLIST_FILE = PokeMe/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -629,11 +637,12 @@
 					"$(SRCROOT)/PokeMe/Views/Home",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.teddy.pokemeecs191;
-				PRODUCT_NAME = PokeMe;
+				PRODUCT_BUNDLE_IDENTIFIER = com.manavsharma.pokeme;
+				PRODUCT_NAME = DavisPokeMe;
+				REQUIRES_FULL_SCREEN = YES;
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 			};
 			name = Debug;
 		};
@@ -713,7 +722,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.pokeme.app.tests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PokeMe.app/PokeMe";
 			};
 			name = Release;
