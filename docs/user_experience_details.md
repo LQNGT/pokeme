@@ -296,13 +296,13 @@ Answers:
 -He said that although the app would be able to find matchups that can fit his schedule, he could always just go to the court on his own time and find people already there to play a game with. He also already knows some of the regulars after playing there a few times. 
 
 Questions regarding the app:
-How was using the app? Did it feel intuitive finding matchups and players?
+How was using the app? Did it feel intuitive finding matchups and players? Did you find it difficult to use?
 Did you manage to match with anyone and agree to play a basketball session with them?
 How many meetups did you join and how many did you end up going to?
 Did you think the "poking" idea is a good feature?
 
 Answers:
--He thought the app felt responsive and all the features worked as intended. He felt that it was pretty simple to find meetups and the details about the meetups along with the players that agreed to join the meetups. 
+-He thought the app felt responsive and all the features worked as intended. He felt that it was pretty simple to find meetups and the details about the meetups along with the players that agreed to join the meetups. Difficulty wise he rated it a 4/10.
 -He said he did match with people but was hesitant with reaching out to them once they matched up as he felt it was easier to join a meetup and connect with the players already in the group chat. 
 -He said he joined 2 of them but has only gone to one so far. He mentioned that only 2/4 of the people actually showed up
 -He felt that the "poking" idea was not ideal for group sports such as basketball but could see it being useful for other sports where you need a partner to play with. 
@@ -335,13 +335,13 @@ Answers:
 -Mentioned that he would be easier to join the clubs so that there was more people of varying skill levels with the same interest instead of having to meet people one by one through the matches if there were no available public meetups
 
 Questions regarding the app:
-How was using the app? Did it feel intuitive finding matchups and players?
+How was using the app? Did it feel intuitive finding matchups and players? How difficult would you rate it to use the app?
 Did you find any meetups or anyone that eventually agreed to play a badminton session with you?
 What did you feel the app could had improved?
 Would you use this to find players in the future?
 
 Answers:
--He mentioned that the interface felt really simple and he liked being able to schedule sessions in the chat with the people he matched. He did mention that he would like to know more about the other players before matching with them. 
+-He mentioned that the interface felt really simple and he liked being able to schedule sessions in the chat with the people he matched. He did mention that he would like to know more about the other players before matching with them. He rated the difficulty a 2/5.
 -He said although he got to talk with one of his matches the other person did not agree to his proposed session due to time availability constraints between them. He also mentioned that there were no current public badminton meetups in the app as well.
 -He pointed out that the AI match score could use more work when it came to explaining what you and the another user had it common, as Ethan was finding more of casual play while his matches were typically people that were trying to improve in the sport or were looking to play an entirely other sport
 -He said he would be down to give it another try once the app populates with more people 
