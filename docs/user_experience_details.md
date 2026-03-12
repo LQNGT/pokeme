@@ -203,8 +203,9 @@ It looks like an sports/events oriented app that helps you find scheduled games 
 
 Started on the meetups page
 Thought it was very intuitive, except profile refreshing and loading was slow
-Joined a bicycling event. Basketball event was full.
+Joined a bicycling event. Basketball event was full
 Sent a poke to someone (did not get a reply yet)
+Did not understand what "match stats" meant
 Thought it was unclear if you poke multiple times or not
 He did think because there were not that many users, that it would be quicker to go to a court and ask
 
